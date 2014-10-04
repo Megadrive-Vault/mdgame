@@ -70,6 +70,7 @@ int main(void)
 			}
 			else
 			{
+				pitch = pitch + 8;
 				VDP_drawText(" ",3,3);
 			}
 			if (*ctrlr & 0x02) 
@@ -78,6 +79,7 @@ int main(void)
 			}
 			else
 			{
+				pitch = pitch - 8;
 				VDP_drawText(" ",3,4);
 			}
 			if (*ctrlr & 0x04)
@@ -86,6 +88,7 @@ int main(void)
 			}
 			else
 			{
+				pitch = pitch - 4;
 				VDP_drawText(" ",3,5);
 			}
 			if (*ctrlr & 0x08)
@@ -94,6 +97,7 @@ int main(void)
 			}
 			else
 			{
+				pitch = pitch + 4;
 				VDP_drawText(" ",3,6);
 			}
 			
@@ -111,6 +115,7 @@ int main(void)
 			}
 			else
 			{
+				pitch = pitch - 1;
 				VDP_drawText(" ",3,9);
 			}
 			
