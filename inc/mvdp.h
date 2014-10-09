@@ -3,8 +3,8 @@
 /* Megadrive VDP functions */
 
 #define VDP_DATAPORT 0xC00000
-#define VDP_CONTROL 0xC00004 // When reading, this is the status register
-#define VDP_CONTROL VDP_STATUS // When writing, this is the control port
+#define VDP_CTRL 0xC00004 // When reading, this is the status register
+#define VDP_STATUS VDP_CTRL // When writing, this is the control port
 #define VDP_COUNTERS 0xC00008 // H and V counters (read)
 
 // VDP Register names
@@ -84,6 +84,5 @@ void vdp_sprite_set_link(int n, int link);
 void vdp_set_sprite_pal(int n, int pal);
 void vdp_set_sprite_priority(int n, int p);
 void vdp_set_sprite_flip(int n, int flip);
-
 
 #endif

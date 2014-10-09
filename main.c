@@ -3,6 +3,11 @@
 #include "mpad.h"
 #include "mvdp.h"
 
+const u16 octs[] =  {0,1,1, 1, 1, 1, 1,1,1,1,1,1 ,0,0, 1,1 ,0,0 ,0 ,1,1 ,0 ,0,0 ,0,0 ,0 ,0 ,0 ,0 ,0 ,0 ,13};
+const u16 notes[] = {7,0,12,12,12,12,2,4,5,4,0,12,7,12,0,12,7,10,12,0,12,10,9,12,7,12,12,12,12,12,12,12,13};
+
+const u16 oct2[] = {1,2,2,3,3,2,2,3,3,2,2,3,3,2,2,3,3,1,1,2,2,1,1,2,2,1,2,1,2,1,2,1,2,1,};
+const u16 not2[] = {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,10,10,10,10,10,10,10,7,7,9,9,10,10,11,11};
 int main(void)
 {
 	VDP_drawText("1   2", 3, 1);
@@ -16,14 +21,46 @@ int main(void)
 	VDP_drawText("S",5,10);
 	
 	unsigned char i = 0;
-	u16 pitch = 0;
+	unsigned char kmax = 10;
+	unsigned char k = kmax;
+	unsigned char amp = 0;
+	unsigned char amp2 = 0;
+	int ucnt = 0;
+	int dcnt = 0;
+	
+	int note = 0;
 	
 	while(1)
 	{
-		pitch = pitch + 1;
-		psg_tone(0,(pitch<<1)&0xF,0xFFFF - pitch);
-		psg_tone(1,(pitch>>1)&0x0F,pitch + 128);
-		psg_tone(2,(pitch / 3)&0x0F,pitch + 384);
+		k--;
+		if (k == 0)
+		{
+			note++;
+			k = kmax;
+		amp2 = 0;
+		}
+		amp++;
+		amp2 = amp2 + 1;
+		if (amp == 16)
+		{
+			amp = 15;
+		}
+		if (amp2 == 16)
+		{
+			amp2 = 15;
+		}
+		if (notes[note] == 13)
+		{
+			note = 0;
+		}
+		else if (notes[note] != 12)
+		{
+			psg_note(0,notes[note],octs[note]+2);
+			amp = 0;
+		}
+		psg_note(1,not2[note],oct2[note]-1);
+		psg_vol(0,amp);
+		psg_vol(1,amp2);
 		
 		unsigned char padinfo = pad_read(PLAYER_1);
 		unsigned char padinfo2 = pad_read(PLAYER_2);
@@ -47,20 +84,34 @@ int main(void)
 			}
 		}
 		
-		VDP_setSprite(0, pitch%320,((pitch / 320) % 224),
-		SPRITE_SIZE(1,1),TILE_ATTR_FULL(PAL0,1,0,0,1),0);
+		if (padinfo & 0x01)
+		{
+			ucnt++;
+		}
+		else
+		{
+			ucnt = 0;
+		}
+		if (ucnt == 1)
+		{
+			kmax++;
+		}
+		if (padinfo & 0x02)
+		{
+			dcnt++;
+		}
+		else
+		{
+			dcnt = 0;
+		}
+		if (dcnt == 1)
+		{
+			kmax--;
+		}
+		
 		
 		VDP_updateSprites();
 		VDP_waitVSync();
-		i++;
-		if (i == 60)
-		{
-			i = 0;
-		}
-		if (i > 30)
-		{
-			
-		}
 	}
 	return (0);
 }
