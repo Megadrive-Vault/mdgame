@@ -3,6 +3,7 @@
 
 #include <genesis.h>
 #include "ids.h"
+#include "mvdp.h"
 
 #define PLAYER_PAD0 0
 #define PLAYER_PAD1 1

@@ -1,5 +1,6 @@
 #ifndef MPAD_H
 #define MPAD_H
+// Megadrive Pad reading routine
 
 #define PLAYER_1 0
 #define PLAYER_2 1
@@ -14,7 +15,9 @@
 #define KEY_C 0x40
 #define KEY_START 0x80
 
+#define VDP_GAMEPAD 0xA10003
+
 // Returns a bitfield - SCBARLDU (EX: bit0, LSB, is 0 when "up" is held);
-unsigned char pad_read(unsigned char player);
+unsigned char pad_read(unsigned char pl);
 
 #endif

@@ -1,6 +1,7 @@
 #include <genesis.h>
 #include "mpsg.h"
 #include "mpad.h"
+#include "mvdp.h"
 
 int main(void)
 {
@@ -19,16 +20,10 @@ int main(void)
 	
 	while(1)
 	{
-	
-		//psg_tone(1,7,pitch + 128);
 		pitch = pitch + 1;
 		psg_tone(0,(pitch<<1)&0xF,0xFFFF - pitch);
 		psg_tone(1,(pitch>>1)&0x0F,pitch + 128);
 		psg_tone(2,(pitch / 3)&0x0F,pitch + 384);
-		
-		// Clr bit 7 to read 1CBRLDU
-		// Set bit 7 to read 0SA00DU
-		//*ctrlr = *ctrlr | (0x40);
 		
 		unsigned char padinfo = pad_read(PLAYER_1);
 		unsigned char padinfo2 = pad_read(PLAYER_2);
@@ -51,7 +46,21 @@ int main(void)
 				VDP_drawText("X",7,4+7-i);
 			}
 		}
+		
+		VDP_setSprite(0, pitch%320,((pitch / 320) % 224),
+		SPRITE_SIZE(1,1),TILE_ATTR_FULL(PAL0,1,0,0,1),0);
+		
+		VDP_updateSprites();
 		VDP_waitVSync();
+		i++;
+		if (i == 60)
+		{
+			i = 0;
+		}
+		if (i > 30)
+		{
+			
+		}
 	}
 	return (0);
 }
