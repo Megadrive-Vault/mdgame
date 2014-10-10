@@ -5,14 +5,6 @@
 #include "player.h"
 #include "globals.h"
 
-const u16 octs[] =  {0,1,1, 1, 1, 1, 1,1,1,1,1,1 ,0,0, 1,1 ,0,0 ,0 ,1,1 ,0 ,0,0 ,0,0 ,0 ,0 ,0 ,0 ,0 ,0 ,13};
-const u16 notes[] = {7,0,12,12,12,12,2,4,5,4,0,12,7,12,0,12,7,10,12,0,12,10,9,12,7,12,12,12,12,12,12,12,13};
-
-const u16 oct2[] = {1,2,2,3,3,2,2,3,3,2,2,3,3,2,2,3,3,1,1,2,2,1,1,2,2,1,2,1,2,1,2,1,2,1,};
-const u16 not2[] = {7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,10,10,10,10,10,10,10,7,7,9,9,10,10,11,11};
-
-
-
 void gameloop(void)
 {
 	for (int y = 0; y < 28; y++)
@@ -26,7 +18,20 @@ void gameloop(void)
 				map[y][x] = 1;
 			}
 			
-			if (y == 18 && x > 12 && x < 20)
+			if ((y == 18 || y == 19)&& x > 12 && x < 20)
+			{
+				map[y][x] = 1;
+			}
+			if (y == 24 && x > 5 && x < 10)
+			{
+				map[y][x] = 1;
+			}
+			
+			if (y > 12 && x < 3)
+			{
+				map[y][x] = 1;
+			}
+			if (y > 12 && x > 37)
 			{
 				map[y][x] = 1;
 			}
@@ -36,15 +41,21 @@ void gameloop(void)
 	int i = 0;
 	
 	player_init(&p1);
-	ghetto_map_render();	
+	player_init(&p2);
 	
-	p1.grounded = 0;
+	p2.palette = 2;
+	p2.sprite_num = 1;
+	p2.tile_index = 3;
+	ghetto_map_render();	
 
 	while (1)
 	{
 		player_take_inputs(&p1,pad_read(0));
+		player_take_inputs(&p2,pad_read(1));
 		player_move(&p1);
+		player_move(&p2);
 		player_draw(&p1,0);
+		player_draw(&p2,1);
 		VDP_waitVSync();
 	}
 }

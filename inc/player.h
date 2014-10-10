@@ -4,6 +4,7 @@
 #include <genesis.h>
 #include "ids.h"
 #include "mpad.h"
+#include "gamedata.h"
 #include "mpsg.h"
 #include "globals.h"
 
@@ -16,13 +17,16 @@
 #define PLAYER_AIRBORN 0
 
 // Physics constants
-#define PLAYER_MAX_DX 80
+#define PLAYER_MAX_DX 21
 #define PLAYER_MAX_DY 32
-#define PLAYER_ACCEL 4
+#define PLAYER_ACCEL 3
 #define PLAYER_DECEL 1
-#define PLAYER_JUMPSTR 14
-#define PLAYER_HIGRAV 5
+#define PLAYER_JUMPSTR 40
+#define PLAYER_HIGRAV 3
 #define PLAYER_LOWGRAV 2
+
+#define PLAYER_TILE_WIDTH 2
+#define PLAYER_TILE_HEIGHT 3
 
 /*
 Player collision points relative to (center,bottom) in (x,y)
@@ -41,10 +45,14 @@ Twelve collision points total, 3 per direction.
 	(x+x2+1,y+y1) , (x+x2+1,y) , (x+x2+1, y+y2)
 	
 */
+
+// Hitbox information
 #define PLAYER_X1 -6
 #define PLAYER_X2 6
-#define PLAYER_Y1 -20
-#define PLAYER_Y2 0
+#define PLAYER_Y1 0
+#define PLAYER_Y3 8
+#define PLAYER_Y4 16
+#define PLAYER_Y2 24
 
 // Horizontal wrapping boundaries
 #define PLAYER_MINX 128 + PLAYER_X1
@@ -78,7 +86,6 @@ struct player
 	u8 dashcooldown; // Cooldown from a dash
 };
 
-
 player p1;
 player p2;
 
@@ -86,5 +93,13 @@ void player_init(player *pl);
 void player_take_inputs(player *pl, u8 pad_data); // Affect physics variables based on input
 void player_move(player *pl); // Run movement routine based on physics info
 void player_draw(player *pl, int sprite_num);
+
+// Support functions for the above
+void player_ground(player *pl);
+void player_gravity(player *pl);
+u8 player_pos_dy(player *pl);
+u8 player_neg_dy(player *pl);
+u8 player_pos_dx(player *pl);
+u8 player_neg_dx(player *pl);
 
 #endif

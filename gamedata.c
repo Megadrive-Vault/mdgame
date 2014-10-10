@@ -2,7 +2,9 @@
 
 u8 map_collision(u16 x, u16 y)
 {
-
+	x = (x >> 3) + 1;
+	y = (y >> 3);
+	return map[y][x];
 }
 
 // For now, use the SGDK text function to render a "level"...

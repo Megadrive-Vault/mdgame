@@ -13,15 +13,6 @@
 
 u8 map[28][40]; 
 
-typedef struct gamedata gamedata;
-struct gamedata
-{
-	player *p1;
-	player *p2; 
-	u8 pad1;
-	u8 pad2;
-};
-
 u8 map_collision(u16 x, u16 y);
 void ghetto_map_render();
 
