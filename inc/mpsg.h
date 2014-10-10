@@ -35,4 +35,6 @@ void psg_pitch(unsigned char chan, unsigned int pitch);
 void psg_tone(unsigned char chan, unsigned char vol, unsigned int pitch);
 void psg_note(unsigned char chan, unsigned char note, unsigned char octave);
 
+void psg_sfx_kernel(void);
+
 #endif

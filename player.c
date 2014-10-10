@@ -7,8 +7,8 @@ void player_init(player *pl)
 	pl->tile_index = 0;
 	pl->tile_index = 0;
 	
-	pl->x = 0;
-	pl->y = 0;
+	pl->x = 32;
+	pl->y = 32;
 	pl->dx = 0;
 	pl->dy = 0;
 	pl->grounded = 0;
@@ -21,11 +21,16 @@ void player_init(player *pl)
 	
 	pl->priority = 1;
 	
+	pl->vis = 1;
+	
 	pl->jump_key = 0;
 	
 	pl->slapcnt = 0;
 	pl->slapcooldown = 0;
 	pl->dashcooldown = 0;
+	
+	pl->dashok = 1;
+	pl->slapok = 1;
 }
 
 void player_take_inputs(player *pl, u8 pad_data)
@@ -42,7 +47,7 @@ void player_take_inputs(player *pl, u8 pad_data)
 		}
 		else if (pl->jump_key == 1)
 		{
-			pl->jump_key = 3;
+			pl->jump_key = 2;
 		}
 	}
 	else
@@ -50,15 +55,11 @@ void player_take_inputs(player *pl, u8 pad_data)
 		pl->jump_key = 0;
 	}
 	
-	if(!(pad_data & KEY_C))
-	{
-		pl->dy = pl->dy - (PLAYER_HIGRAV * 2);
-	}
-	
 	// Horizontal ddx
-	if (!(pad_data & KEY_RIGHT))
+	if (!(pad_data & KEY_RIGHT) && pl->dashcooldown == 0)
 	{
-		if (pl->dx < PLAYER_MAX_DX)
+		pl->direction = 0;
+		if (pl->dx <= PLAYER_MAX_DX)
 		{
 			if (PLAYER_ACCEL_WAIT)
 			{
@@ -77,14 +78,15 @@ void player_take_inputs(player *pl, u8 pad_data)
 				pl->dx += PLAYER_ACCEL;
 			}
 		}
-		if (pl->dx > PLAYER_MAX_DX)
+		else
 		{
-			pl->dx = PLAYER_MAX_DX;
+			pl->dx-= PLAYER_ACCEL<<1;
 		}
 	}
-	else if (!(pad_data & KEY_LEFT))
+	else if (!(pad_data & KEY_LEFT) && pl->dashcooldown == 0)
 	{
-		if (pl->dx > PLAYER_MAX_DX * -1)
+		pl->direction = 1;
+		if (pl->dx >= PLAYER_MAX_DX * -1)
 		{
 			if (PLAYER_ACCEL_WAIT)
 			{
@@ -103,9 +105,9 @@ void player_take_inputs(player *pl, u8 pad_data)
 				pl->dx -= PLAYER_ACCEL;
 			}
 		}
-		if (pl->dx < PLAYER_MAX_DX * -1)
+		else
 		{
-			pl->dx = PLAYER_MAX_DX * -1;
+			pl->dx+= PLAYER_ACCEL<<1;
 		}
 	}
 	else
@@ -163,10 +165,21 @@ void player_take_inputs(player *pl, u8 pad_data)
 	{
 		pl->dy = PLAYER_MAX_DY * -1;
 	}
+	
+	// Dash inputs
+	if (!(pad_data & KEY_C))
+	{
+		if (pl->dashcooldown == 0 && pl->dashok)
+		{
+			pl->dashcooldown = PLAYER_DASHTIME;
+			player_dash_vectors(pl, pad_data);
+		}
+	}
 }
 
 void player_move(player *pl)
 {
+	player_dash(pl);
 	u8 coltype = 0;
 	// Actually do the movement now
 	coltype = player_pos_dx(pl);
@@ -212,23 +225,74 @@ void player_move(player *pl)
 
 void player_draw(player *pl)
 {
-	VDP_setSpriteDirect(pl->sprite_num,
-		(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 1,
-		pl->y >> PLAYER_RESOLUTION,
-		SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
-		TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index),
-		pl->sprite_num +1);
+	player_vis(pl);
+	if (pl->vis & 1)
+	{
+		VDP_setSpriteDirect(pl->sprite_num,
+			(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 1,
+			(pl->y >> PLAYER_RESOLUTION) - ((8*PLAYER_TILE_HEIGHT) - PLAYER_Y2),
+			SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
+			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index),
+			pl->sprite_num +1);
+	}
+	else
+	{
+		VDP_setSpriteDirect(pl->sprite_num,
+			-128,
+			-128,
+			SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
+			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index),
+			pl->sprite_num +1);
+	}
 }
 
+
+
 // PHYSICS SUPPORT FUNCTIONS
+
+
+void player_dash_vectors(player *pl, u8 pad_data)
+{
+	// X
+	if (!(pad_data & KEY_RIGHT))
+	{
+		pl->dx = PLAYER_DASH_THRUST_X;
+	}
+	else if (!(pad_data & KEY_LEFT))
+	{
+		pl->dx = 1 + PLAYER_DASH_THRUST_X * -1;
+	}
+	else if (pl->grounded)
+	{
+		pl->dx = (pl->direction) ? (PLAYER_DASH_THRUST_X * -1) : PLAYER_DASH_THRUST_X;
+	}
+	if (!(pad_data & KEY_DOWN))
+	{
+		pl->dy = PLAYER_DASH_THRUST_Y;
+	}
+	else if (!(pad_data & KEY_UP))
+	{
+		pl->dy = 1 + PLAYER_DASH_THRUST_Y * -1;
+	}
+	else
+	{
+		pl->dy = 0;
+	}
+	// Y
+}
+
 void player_ground(player *pl)
 {
-
 	// Find out if we are grounded...
 	if (map_collision((pl->x >> PLAYER_RESOLUTION) + PLAYER_X1,(pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2 + 1) ||
 		map_collision((pl->x >> PLAYER_RESOLUTION) + PLAYER_X2,(pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2 + 1) ||
 		map_collision((pl->x >> PLAYER_RESOLUTION),(pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2 + 1))
 	{
+		// If a landing just occured, cancel dash cooldown (wavedashing, heh)
+		if (pl->dashcooldown != 0 && pl->grounded == 0)
+		{
+			pl->dashcooldown = 0;
+		}
 		pl->grounded = 1;
 	}
 	else
@@ -242,7 +306,7 @@ void player_gravity(player *pl)
 	// Variable strength gravity
 	if (!pl->grounded)
 	{
-		if (pl->jump_key)
+		if (pl->jump_key || pl->dashcooldown != 0)
 		{
 			if (PLAYER_LOWGRAV_WAIT)
 			{
@@ -284,6 +348,31 @@ void player_gravity(player *pl)
 	}
 }
 
+void player_vis(player *pl)
+{
+	if (pl->dashcooldown == 0)
+	{
+		pl->vis = 1;
+	}
+	else
+	{
+		pl->vis++;
+	}
+}
+
+void player_dash(player *pl)
+{
+	if (pl->dashcooldown != 0)
+	{
+		pl->dashok = 0;
+		pl->dashcooldown--;
+	}
+	if (pl->grounded)
+	{
+		pl->dashok = 1;
+	}
+}
+
 u8 player_pos_dy(player *pl)
 {
 	// Collision type if it should come up
@@ -298,10 +387,6 @@ u8 player_pos_dy(player *pl)
 			u16 checkx2 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2;
 			u16 checkx3 = (pl->x >> PLAYER_RESOLUTION);
 			u16 checky = (pl->y >>  PLAYER_RESOLUTION) + PLAYER_Y2 + 1;
-			if (checky > 224)
-			{
-				checky = 224;
-			}
 			coltype = map_collision(checkx1, checky);
 			if (coltype) { break; };
 			coltype = map_collision(checkx2, checky);
@@ -328,15 +413,6 @@ u8 player_neg_dy(player *pl)
 			u16 checkx2 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2;
 			u16 checkx3 = (pl->x >> PLAYER_RESOLUTION);
 			u16 checky = (pl->y >>  PLAYER_RESOLUTION) + PLAYER_Y1 - 1;
-			
-			// positions are unsigned, so if it is "greater" than 224
-			// but moving up, it means it rolled over past 0, so we
-			// must clamp the position at 0.
-			
-			if (checky > 224)
-			{
-				checky = 0;
-			}
 			coltype = map_collision(checkx1, checky);
 			if (coltype) { break; };
 			coltype = map_collision(checkx2, checky);
@@ -366,14 +442,11 @@ u8 player_pos_dx(player *pl)
 			u16 checky1 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y1;
 			u16 checky2 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2;
 			u16 checky3 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y3;
-			u16 checky4 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y4;
 			coltype = map_collision(checkx, checky1);
 			if (coltype) { break; };
 			coltype = map_collision(checkx, checky2);
 			if (coltype) { break; };
 			coltype = map_collision(checkx, checky3);
-			if (coltype) { break; };
-			coltype = map_collision(checkx, checky4);
 			if (coltype) { break; };
 			if (pl->x == (320 << PLAYER_RESOLUTION) - 1)
 			{
@@ -403,14 +476,11 @@ u8 player_neg_dx(player *pl)
 			u16 checky1 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y1;
 			u16 checky2 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2;
 			u16 checky3 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y3;
-			u16 checky4 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y4;
 			coltype = map_collision(checkx, checky1);
 			if (coltype) { break; };
 			coltype = map_collision(checkx, checky2);
 			if (coltype) { break; };
 			coltype = map_collision(checkx, checky3);
-			if (coltype) { break; };
-			coltype = map_collision(checkx, checky4);
 			if (coltype) { break; };
 			if (pl->x == 0)
 			{
