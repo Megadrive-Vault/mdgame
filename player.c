@@ -126,7 +126,7 @@ void player_move(player *pl)
 	}
 } 
 
-void player_draw(player *pl, int sprite_num)
+void player_draw(player *pl)
 {
 	VDP_setSpriteDirect(pl->sprite_num,
 		pl->x >> 3,

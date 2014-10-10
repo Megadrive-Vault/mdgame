@@ -38,25 +38,33 @@ void gameloop(void)
 		}
 	}
 	
-	int i = 0;
-	
 	player_init(&p1);
 	player_init(&p2);
 	
 	p2.palette = 2;
 	p2.sprite_num = 1;
 	p2.tile_index = 3;
-	ghetto_map_render();	
+	ghetto_map_render();
+	
+	psg_vol(0,0);
+	psg_vol(1,0);
+	
+	int i = 0;
 
 	while (1)
 	{
+		i++;
+		p1.sprite_num = i % 2;
+		p2.sprite_num = (i + 1) % 2;
 		player_take_inputs(&p1,pad_read(0));
 		player_take_inputs(&p2,pad_read(1));
 		player_move(&p1);
 		player_move(&p2);
-		player_draw(&p1,0);
-		player_draw(&p2,1);
+		psg_pitch(0,(p2.x + p1.x) >> 1);
+		psg_pitch(1,(p2.y + p1.y) >> 1);
 		VDP_waitVSync();
+		player_draw(&p1);
+		player_draw(&p2);
 	}
 }
 

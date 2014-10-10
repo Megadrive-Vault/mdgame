@@ -92,7 +92,7 @@ player p2;
 void player_init(player *pl);
 void player_take_inputs(player *pl, u8 pad_data); // Affect physics variables based on input
 void player_move(player *pl); // Run movement routine based on physics info
-void player_draw(player *pl, int sprite_num);
+void player_draw(player *pl);
 
 // Support functions for the above
 void player_ground(player *pl);
