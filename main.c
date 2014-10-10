@@ -18,6 +18,11 @@ void gameloop(void)
 				map[y][x] = 1;
 			}
 			
+			if (y == 0)
+			{
+				map[y][x] = 1;
+			}
+			
 			if ((y == 18 || y == 19)&& x > 12 && x < 20)
 			{
 				map[y][x] = 1;
@@ -27,7 +32,7 @@ void gameloop(void)
 				map[y][x] = 1;
 			}
 			
-			if (y > 12 && x < 3)
+			if (x == 0 || x == 1 || x == 39)
 			{
 				map[y][x] = 1;
 			}
@@ -38,30 +43,34 @@ void gameloop(void)
 		}
 	}
 	
+	VDP_drawText("WELCOME TO CHAMP CLAMPS",8,7);
+	
 	player_init(&p1);
 	player_init(&p2);
 	
+	p1.palette = 1;
 	p2.palette = 2;
 	p2.sprite_num = 1;
-	p2.tile_index = 3;
+	p1.tile_index = 1;
+	p2.tile_index = 1;
 	ghetto_map_render();
 	
-	psg_vol(0,0);
-	psg_vol(1,0);
 	
 	int i = 0;
 
 	while (1)
 	{
 		i++;
+		psg_vol(0,i<<1 & 0xF);
+		psg_vol(1,(i<<1) & 0xF);
 		p1.sprite_num = i % 2;
 		p2.sprite_num = (i + 1) % 2;
 		player_take_inputs(&p1,pad_read(0));
 		player_take_inputs(&p2,pad_read(1));
 		player_move(&p1);
 		player_move(&p2);
-		psg_pitch(0,(p2.x + p1.x) >> 1);
-		psg_pitch(1,(p2.y + p1.y) >> 1);
+		psg_pitch(0,(p2.x + p1.x));
+		psg_pitch(1,(p2.y + p1.y));
 		VDP_waitVSync();
 		player_draw(&p1);
 		player_draw(&p2);

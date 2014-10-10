@@ -16,17 +16,25 @@
 #define PLAYER_GROUNDED 1
 #define PLAYER_AIRBORN 0
 
-// Physics constants
-#define PLAYER_MAX_DX 21
-#define PLAYER_MAX_DY 32
-#define PLAYER_ACCEL 3
-#define PLAYER_DECEL 1
-#define PLAYER_JUMPSTR 40
-#define PLAYER_HIGRAV 3
-#define PLAYER_LOWGRAV 2
 
-#define PLAYER_TILE_WIDTH 2
-#define PLAYER_TILE_HEIGHT 3
+// Physics "resolution"
+#define PLAYER_RESOLUTION 	1
+// Physics constants
+#define PLAYER_MAX_DX 		7
+#define PLAYER_MAX_DY 		15
+#define PLAYER_ACCEL 		1
+#define PLAYER_DECEL 		1
+#define PLAYER_JUMPSTR		12
+#define PLAYER_HIGRAV 		1
+#define PLAYER_LOWGRAV 		1
+
+#define PLAYER_DECEL_WAIT 	2
+#define PLAYER_ACCEL_WAIT 	0
+#define PLAYER_HIGRAV_WAIT 	0
+#define PLAYER_LOWGRAV_WAIT	1
+
+#define PLAYER_TILE_WIDTH 	2
+#define PLAYER_TILE_HEIGHT 	3
 
 /*
 Player collision points relative to (center,bottom) in (x,y)
@@ -76,6 +84,13 @@ struct player
 	int dy;
 	u8 grounded; // Non-zero = not in the air
 	u8 jump_key; // 0 - not pushed; 1 - just pushed; 2 - held
+	
+	u8 higrav_wait;
+	u8 lowgrav_wait;
+	u8 decel_wait;
+	u8 accel_wait;
+	
+	u8 priority;
 	
 	u8 input_id; // Who controls this sprite - 0 for P1, 1 for P2
 	
