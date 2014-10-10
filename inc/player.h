@@ -2,7 +2,6 @@
 #define PLAYER_H
 
 #include <genesis.h>
-#include "ids.h"
 #include "mpad.h"
 #include "gamedata.h"
 #include "mpsg.h"

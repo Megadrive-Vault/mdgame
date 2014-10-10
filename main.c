@@ -61,8 +61,8 @@ void gameloop(void)
 	while (1)
 	{
 		i++;
-		psg_vol(0,i<<1 & 0xF);
-		psg_vol(1,(i<<1) & 0xF);
+		psg_vol(0,i >> 3);
+		psg_vol(1,(i >> 3) + 8);
 		p1.sprite_num = i % 2;
 		p2.sprite_num = (i + 1) % 2;
 		player_take_inputs(&p1,pad_read(0));

@@ -169,12 +169,12 @@ void player_move(player *pl)
 {
 	u8 coltype = 0;
 	// Actually do the movement now
-	
 	coltype = player_pos_dx(pl);
 	if (coltype == MAP_SOLID)
 	{
 		pl->dx = 0;
 	}
+	
 	coltype = player_neg_dx(pl);
 	if (coltype == MAP_SOLID)
 	{
@@ -186,12 +186,11 @@ void player_move(player *pl)
 	{
 		pl->dy = 0;
 	}
-	// Handle downwards collision
+	
 	coltype = player_neg_dy(pl);
-	// Handle upwards collision
 	if (coltype == MAP_SOLID)
 	{
-		pl->dy = pl->dy * -1;
+		pl->dy = (pl->dy >> 1) * -1;
 	}
 	// Terminate a fall when landing
 	if (pl->grounded && pl->dy > 0)
@@ -214,7 +213,7 @@ void player_move(player *pl)
 void player_draw(player *pl)
 {
 	VDP_setSpriteDirect(pl->sprite_num,
-		pl->x >> PLAYER_RESOLUTION,
+		(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 1,
 		pl->y >> PLAYER_RESOLUTION,
 		SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
 		TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index),
