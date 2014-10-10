@@ -11,6 +11,8 @@
 
 // Struct to hold various properties about the game state
 
+u8 map[28][40]; 
+
 typedef struct gamedata gamedata;
 struct gamedata
 {
@@ -20,9 +22,7 @@ struct gamedata
 	u8 pad2;
 };
 
-u8 map[28][40]; 
-
-void read_pads(gamedata *data);
+u8 map_collision(u16 x, u16 y);
 void ghetto_map_render();
 
 #endif

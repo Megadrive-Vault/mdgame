@@ -1,9 +1,8 @@
 #include "gamedata.h"
 
-void read_pads(gamedata *data)
+u8 map_collision(u16 x, u16 y)
 {
-	data->pad1 = pad_read(0);
-	data->pad2 = pad_read(1);
+
 }
 
 // For now, use the SGDK text function to render a "level"...
