@@ -7,7 +7,7 @@ void player_init(player *pl)
 	pl->tile_index = 0;
 	pl->tile_index = 0;
 	
-	pl->x = 64;
+	pl->x = 0;
 	pl->y = 0;
 	pl->dx = 0;
 	pl->dy = 0;
@@ -298,6 +298,10 @@ u8 player_pos_dy(player *pl)
 			u16 checkx2 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2;
 			u16 checkx3 = (pl->x >> PLAYER_RESOLUTION);
 			u16 checky = (pl->y >>  PLAYER_RESOLUTION) + PLAYER_Y2 + 1;
+			if (checky > 224)
+			{
+				checky = 224;
+			}
 			coltype = map_collision(checkx1, checky);
 			if (coltype) { break; };
 			coltype = map_collision(checkx2, checky);
@@ -324,14 +328,25 @@ u8 player_neg_dy(player *pl)
 			u16 checkx2 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2;
 			u16 checkx3 = (pl->x >> PLAYER_RESOLUTION);
 			u16 checky = (pl->y >>  PLAYER_RESOLUTION) + PLAYER_Y1 - 1;
-			coltype = map_collision(checkx1, checky);
 			
+			// positions are unsigned, so if it is "greater" than 224
+			// but moving up, it means it rolled over past 0, so we
+			// must clamp the position at 0.
+			
+			if (checky > 224)
+			{
+				checky = 0;
+			}
+			coltype = map_collision(checkx1, checky);
 			if (coltype) { break; };
 			coltype = map_collision(checkx2, checky);
 			if (coltype) { break; };
 			coltype = map_collision(checkx3, checky);
 			if (coltype) { break; };
-			pl->y = pl->y - 1;
+			if (pl->y != 0)
+			{
+				pl->y = pl->y - 1;
+			}
 		}
 	}
 	return coltype;
@@ -347,7 +362,7 @@ u8 player_pos_dx(player *pl)
 		// Increment step by step, checking for a collision
 		for (int l = pl->dx; l != 0; l--)
 		{
-			u16 checkx = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2 + 1;
+			u16 checkx = ((pl->x >> PLAYER_RESOLUTION) + PLAYER_X2 + 1) % 320;
 			u16 checky1 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y1;
 			u16 checky2 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2;
 			u16 checky3 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y3;
@@ -360,6 +375,10 @@ u8 player_pos_dx(player *pl)
 			if (coltype) { break; };
 			coltype = map_collision(checkx, checky4);
 			if (coltype) { break; };
+			if (pl->x == (320 << PLAYER_RESOLUTION) - 1)
+			{
+				pl->x = -1;
+			}
 			pl->x = pl->x + 1;
 		}
 	}
@@ -376,7 +395,11 @@ u8 player_neg_dx(player *pl)
 		// Increment step by step, checking for a collision
 		for (int l = pl->dx * -1; l != 0; l--)
 		{
-			u16 checkx = (pl->x >>  PLAYER_RESOLUTION) + PLAYER_X1 - 1;
+			u16 checkx = ((pl->x >>  PLAYER_RESOLUTION) + PLAYER_X1 - 1);
+			if (checkx > 320) // Trust me on this one, it'll fix the left.
+			{
+				checkx += 320;
+			}
 			u16 checky1 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y1;
 			u16 checky2 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2;
 			u16 checky3 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y3;
@@ -389,6 +412,10 @@ u8 player_neg_dx(player *pl)
 			if (coltype) { break; };
 			coltype = map_collision(checkx, checky4);
 			if (coltype) { break; };
+			if (pl->x == 0)
+			{
+				pl->x = (320 << PLAYER_RESOLUTION) - 1;
+			}
 			pl->x = pl->x - 1;
 		}
 	}
