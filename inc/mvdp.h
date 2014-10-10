@@ -1,5 +1,7 @@
 #ifndef MVDP_H
 #define MVDP_H
+
+#include "genesis.h"
 /* Megadrive VDP functions */
 
 #define VDP_DATAPORT 0xC00000
@@ -43,11 +45,11 @@
 // TODO: Take arguments for more use cases
 void vdp_init(void);
 
-void vdp_write_register(int regnum, int data); 
-void vdp_set_sprite_base(int base);
+void vdp_write_register(u16 regnum, u16 data); 
+void vdp_set_sprite_base(u16 base);
 
-void vdp_read_vram(int addr);
-void vdp_write_vram(int addr, int data);
+void vdp_read_vram(u16 addr);
+void vdp_write_vram(u16 addr, u16 data);
 
 // Sprite functions
 /*
@@ -77,12 +79,12 @@ x = Horizontal coordinate of sprite
 
 
 */
-void vdp_sprite_set_x(int n, int x);
-void vdp_sprite_set_y(int n, int y);
-void vdp_sprite_set_size(int n, int w, int h); // Size is in tiles
-void vdp_sprite_set_link(int n, int link);
-void vdp_set_sprite_pal(int n, int pal);
-void vdp_set_sprite_priority(int n, int p);
-void vdp_set_sprite_flip(int n, int flip);
+void vdp_sprite_set_x(u16 n, u16 x);
+void vdp_sprite_set_y(u16 n, u16 y);
+void vdp_sprite_set_size(u16 n, u16 w, u16 h); // Size is in tiles
+void vdp_sprite_set_link(u16 n, u16 link);
+void vdp_set_sprite_pal(u16 n, u16 pal);
+void vdp_set_sprite_priority(u16 n, u16 p);
+void vdp_set_sprite_flip(u16 n, u16 flip);
 
 #endif

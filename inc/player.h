@@ -4,6 +4,7 @@
 #include <genesis.h>
 #include "ids.h"
 #include "mvdp.h"
+#include "globals.h"
 
 #define PLAYER_PAD0 0
 #define PLAYER_PAD1 1
@@ -44,9 +45,6 @@ Twelve collision points total, 3 per direction.
 typedef struct player player;
 struct player 
 {
-	// Universal to all game structs - identifies what type of struct for
-	// routines that act upon multiple types - see ids.h
-	u8 type; 
 	u16 sprite_num;
 	
 	// Physics variables:
@@ -69,6 +67,10 @@ struct player
 	u8 slapcooldown; // Helplessness after an attack before player can be active
 	u8 dashcooldown; // Cooldown from a dash
 };
+
+
+player p1;
+player p2;
 
 void player_take_inputs(player *pl); // Affect physics variables based on input
 void player_move(player *pl); // Run movement routine based on physics info
