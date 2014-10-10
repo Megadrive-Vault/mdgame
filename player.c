@@ -136,8 +136,6 @@ void player_draw(player *pl)
 		pl->sprite_num +1);
 }
 
-
-
 // PHYSICS SUPPORT FUNCTIONS
 void player_ground(player *pl)
 {
@@ -153,7 +151,7 @@ void player_ground(player *pl)
 	{
 		pl->grounded = 0;
 	}
-}
+} 
 
 void player_gravity(player *pl)
 {
