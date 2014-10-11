@@ -8,6 +8,7 @@
 
 #define MAP_EMPTY 0
 #define MAP_SOLID 1
+#define MAP_CIELING 2
 
 u8 map[32][40]; 
 u8 map_collision(u16 x, u16 y);

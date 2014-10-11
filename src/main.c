@@ -13,54 +13,19 @@
 #include "map.h"
 
 const void* const instrument_table[] =
-  {
+{
 	instrument__saw,
 	instrument__saw,
 	instrument__saw,
 	0
-  };
+};
 
-static void load_test_map(void)
-{
-	for (int y = 0; y < 32; y++)
-	{
-		for (int x = 0; x < 40; x++)
-		{
-			map[y][x] = 0;
-			if ((x > 37 || x < 3))
-			{ 
-				map[y][x] = 1;
-			}
-			if (y > 19 && x > 37)
-			{
-				map[y][x] = 0;
-			}
-	
-			if (y == 27)
-			{
-				map[y][x] = 1;
-			}
-			
-			if ((y == 18 || y == 19)&& x > 12 && x < 20)
-			{
-				map[y][x] = 1;
-			}
-			if (y == 24 && x > 5 && x < 10)
-			{
-				map[y][x] = 1;
-			}
-			if (y == 31)
-			{
-				map[y][x] = 1;
-			}
-		}
-	}
-	
 
-}
+
 void gameloop(void)
 {
 	memcpy(&map, &default_map, sizeof(u8[32][40]));
+	
 	
 	player_init(&p1);
 	player_init(&p2);
@@ -81,29 +46,36 @@ void gameloop(void)
 	enemy e;
 	enemy_spawn(&e);
 	
+	player *player_a = &p1;
+	player *player_b = &p2;
+	
 	while (1)
 	{
 		i++;
+		player_a = (i & 0x01) ? &p1 : &p2;
+		player_b = (i & 0x01) ? &p2 : &p1;
 		p1.sprite_num = i % 2;
 		p2.sprite_num = (i + 1) % 2;
-		player_take_inputs(&p1,pad_read(0));
-		player_take_inputs(&p2,pad_read(1));
-		player_move(&p1);
-		player_move(&p2);
-		player_collide(&p1);
-		player_collide(&p2);
-		player_slap(&p1);
-		player_slap(&p2);
-		player_animate(&p1);
-		player_animate(&p2);
-		VDP_waitVSync();
-		player_draw(&p1);
-		player_draw(&p2);
+		player_take_inputs(player_a,pad_read((i & 0x01) ? 0 : 1));
+		player_take_inputs(player_b,pad_read((i & 0x01) ? 1 : 0));
+		player_move(player_a);
+		player_move(player_b);
 		enemy_update(&e);
-		player_dma_tiles(&p1);
-		player_dma_tiles(&p2);
-		player_dma_pal(&p1);
-		player_dma_pal(&p2);
+		player_collide(player_a);
+		player_collide(player_b);
+		player_slap(player_a);
+		player_slap(player_b);
+		player_animate(player_a);
+		player_animate(player_b);
+		VDP_waitVSync();
+		player_dma_tiles(player_a);
+		player_dma_tiles(player_b);
+		player_dma_pal(player_a);
+		player_dma_pal(player_b);
+		enemy_dma_tiles(&e);
+		player_draw(player_a);
+		player_draw(player_b);
+		enemy_draw(&e);
 		// Enemy update section
 	}
 }

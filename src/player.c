@@ -3,7 +3,10 @@
 void player_dma_tiles(player *pl)
 {
 	// Load the player tiles
-	VDP_doVRamDMA(player_sprites + (32*16*pl->tile_offset),pl->tile_index + (32*16 * pl->player_num),16*16*1);
+	u8 num_tiles = PLAYER_TILE_WIDTH * PLAYER_TILE_HEIGHT;
+	u16 size = (16 * num_tiles);
+	u16 *src_addr = player_sprites + (32*(PLAYER_TILE_WIDTH * PLAYER_TILE_HEIGHT)*pl->tile_offset);
+	VDP_doVRamDMA(src_addr,pl->tile_index + (32*(PLAYER_TILE_WIDTH * PLAYER_TILE_HEIGHT) * pl->player_num),size);
 }
 
 void player_calc_animation(player *pl)
@@ -218,14 +221,14 @@ void player_init(player *pl)
 	pl->slapok = 1;
 	
 	const u16 pal1[] = {
-		0x0000, 0x0400, 0x0800, 0x0222,
+		0x0000, 0x0420, 0x0820, 0x0222,
 		0x0CCC, 0x0EEE, 0x029C, 0x06CE,
 		0x0000, 0x0820, 0x04AE, 0x0EEE,
 		0x0000, 0x0820, 0x04AE, 0x0EEE
 	};
 	const u16 pal2[] = {
-		0x0000, 0x0204, 0x0208, 0x028C,
-		0x0CCC, 0x0EEE, 0x04AE, 0x06CE,
+		0x0000, 0x0204, 0x0208, 0x006E,
+		0x0ACC, 0x0EEE, 0x04AE, 0x06CE,
 		0x0000, 0x0026, 0x04AE, 0x0EEE,
 		0x0000, 0x0026, 0x04AE, 0x0EEE
 	};
@@ -497,6 +500,10 @@ void player_move(player *pl)
 			pl->dy = pl->dy * -1;
 		}
 	}
+	else if (coltype == MAP_CIELING)
+	{
+		pl->dy = pl->dy * -1;
+	}
 	// Terminate a fall when landing
 	if (pl->grounded && pl->dy > 0)
 	{
@@ -529,7 +536,7 @@ void player_draw(player *pl)
 			(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 9 + (16 - (4*PLAYER_TILE_WIDTH)),
 			(pl->y >> PLAYER_RESOLUTION) - ((8*PLAYER_TILE_HEIGHT) - PLAYER_Y2),
 			SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
-			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,(pl->tile_index / 32)+(16*pl->player_num)),
+			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,(pl->tile_index / 32)+(PLAYER_TILE_WIDTH * PLAYER_TILE_HEIGHT * pl->player_num)),
 			pl->sprite_num +1);
 	}
 	else // Don't render
@@ -566,10 +573,11 @@ void player_collide(player *pl)
 	{
 		if (pl->slapcooldown > PLAYER_SLAP_THRESHHOLD)
 		{
+			pl->other->slapcooldown = 0;
+			pl->other->slapcnt = 0;
 			pl->other->hitfreeze = 6;
 			pl->hitfreeze = 6;
 			pl->other->dx = (pl->direction ? -4 : 4) + (pl->dx / 2);
-			
 			int magx = pl->dx;
 			if (magx < 0)
 			{
