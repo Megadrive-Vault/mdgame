@@ -5,6 +5,7 @@
 #include "player.h"
 #include "globals.h"
 #include "echo.h"
+#include "enemy.h"
 
 // Resources
 #include "music.h"
@@ -85,6 +86,10 @@ void gameloop(void)
 	// Initialize the sound engine
 	echo_init(instrument_table);
 	echo_play_bgm(&music__example_track);
+
+	enemy e;
+	enemy_spawn(&e);
+	
 	while (1)
 	{
 		i++;
@@ -99,8 +104,10 @@ void gameloop(void)
 		VDP_waitVSync();
 		player_draw(&p1);
 		player_draw(&p2);
+		enemy_update(&e);
 		player_dma_pal(&p1);
 		player_dma_pal(&p2);
+		// Enemy update section
 	}
 }
 
