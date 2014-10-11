@@ -12,14 +12,12 @@
 
 typedef struct enemy
 {
-u16 orig_x;
-u16 orig_y;
+	u16 x;
+	u16 y;
 
-u16 x;
-u16 y;
-
-u8 direction; // 0 = Rightward, 1 = Leftward
-u8 phase;
+	u8 direction; // 0 = Rightward, 1 = Leftward
+	u8 phase;
+	u8 flip_curve;
 } enemy;
 
 void enemy_spawn(enemy*);

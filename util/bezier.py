@@ -23,7 +23,6 @@ import os
 import re
 
 def b(t, p):
-    #a = lambda axis: p[0][axis] * (1 - t) * (1 - t)
     b = lambda axis: p[0][axis] * (1 - t) * t * 2
     c = lambda axis: p[1][axis] * t * t
     return (b(0) + c(0), b(1) + c(1))
@@ -39,9 +38,12 @@ def bezier_array(points, frames):
     the array encodes the discrete points between 
     """
     out = []
+    prev_x, prev_y = 0, 0
     for i in range(frames + 1):
         t = i / frames
-        out.append(b(t, points))
+        (x, y) = b(t, points)
+        out.append((x - prev_x, y - prev_y))
+        prev_x, prev_y = x, y
     return out
 
 def c_bezier_array(points, frames):
@@ -65,11 +67,11 @@ if __name__ == "__main__":
     base_output_file = os.path.basename(output_file)
     base_output_file = os.path.splitext(base_output_file)[0]
     # Initialize regex-based line parser
-    parser = re.compile('([a-z_]+): ([0-9]+) \(([0-9]+),([0-9]+)\) \(([0-9]+),([0-9]+)\)')
+    parser = re.compile('([a-z_]+): ([0-9]+) \((-?[0-9]+),(-?[0-9]+)\) \(-?([0-9]+),(-?[0-9]+)\)')
     # Insert the beginning of the output header file
     out  = '#ifndef ' + base_output_file.upper() + '_H\n'
     out += '#define ' + base_output_file.upper() + '_H\n'
-    out += 'typedef struct point_diff { u8 x; u8 y } point_diff;\n\n'
+    out += 'typedef struct point_diff { int8_t x; int8_t y } point_diff;\n\n'
     # Iterate over each line, extracting each field
     for line in open(sys.argv[1]):
         match = parser.match(line)
