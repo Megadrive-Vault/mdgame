@@ -57,11 +57,11 @@ void gameloop(void)
 	player_init(&p1);
 	player_init(&p2);
 	
-	p1.palette = 1;
-	p2.palette = 2;
+	p1.palette = 0;
+	p2.palette = 1;
 	p2.sprite_num = 1;
 	p1.tile_index = 0;
-	p2.tile_index = 1;
+	p2.tile_index = 0;
 	ghetto_map_render();
 	
 	// Load the player tiles
@@ -72,10 +72,14 @@ void gameloop(void)
 	0x0000, 0x0A20, 0x04AE, 0x0EEE
 	};
 	u16 palette2[] = {
-	0x0000, 0x0A20, 0x04AE, 0x0EEE
+	0x0000, 0x0AA0, 0x04AE, 0x0EEE
 	};
 	
-	VDP_doCRamDMA(&palette,0x0010,4);
+	u8 nothing[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	
+	VDP_doCRamDMA(&palette,0x0000,4);
+	VDP_doCRamDMA(&palette2,0x0020,4);
+	VDP_doVRamDMA(&nothing,0x0000,16);
 	
 	int i = 0;
 	echo_play_bgm(&music__example_track);
@@ -85,11 +89,12 @@ void gameloop(void)
 		if (i % 6 == 0)
 		{
 			p1.tile_offset++;
+			p2.tile_offset++;
 			if (p1.tile_offset == 10)
 			{
 				p1.tile_offset = 2;
+				p2.tile_offset = 2;
 			}
-			p2.tile_index = (i >> 2)%16;
 		}
 		p1.sprite_num = i % 2;
 		p2.sprite_num = (i + 1) % 2;
