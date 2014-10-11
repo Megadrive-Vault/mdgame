@@ -11,6 +11,14 @@
 #include "music.h"
 #include "instrument.h"
 
+const void* const instrument_table[] =
+  {
+	instrument__square,
+	instrument__saw,
+	instrument__piano,
+	0
+  };
+
 void gameloop(void)
 {
 	for (int y = 0; y < 32; y++)
@@ -78,6 +86,8 @@ void gameloop(void)
 	VDP_doCRamDMA(&palette,0x0010,4);
 	
 	int i = 0;
+	// Initialize the sound engine
+	echo_init(instrument_table);
 	echo_play_bgm(&music__example_track);
 	while (1)
 	{
@@ -103,20 +113,11 @@ void gameloop(void)
 	}
 }
 
-const void* const instrument_table[] =
-  {
-	instrument__square,
-	instrument__saw,
-	instrument__piano,
-	0
-  };
 int main(void)
 {
 	VDP_init();
 	gameloop();
 
-	// Initialize the sound engine
-	echo_init(instrument_table);
 	while(1)
 	{
 		VDP_waitVSync();
