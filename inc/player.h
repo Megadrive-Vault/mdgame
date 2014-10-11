@@ -55,6 +55,9 @@
 #define PLAYER_ANIM_OFF_FALL 20
 #define PLAYER_ANIM_OFF_PRESLAP 24
 #define PLAYER_ANIM_OFF_POSTSLAP 25
+#define PLAYER_ANIM_OFF_HURT_UP 27
+#define PLAYER_ANIM_OFF_HURT_DOWN 28
+#define PLAYER_ANIM_OFF_HURT_SIDE 29
 
 #define PLAYER_ANIM_STAND 9
 #define PLAYER_ANIM_WALK 1
@@ -102,7 +105,6 @@ struct player
 	u8 anim_cnt_jump;
 	u8 anim_cnt_fall;
 
-
 	u8 input_id; // Who controls this sprite - 0 for P1, 1 for P2
 	u8 vis; // Is the player to be rendered?
 	u8 priority; // Above or below playfield backdrop graphics
@@ -144,7 +146,7 @@ struct player
 player p1;
 player p2;
 
-void player_dma_tiles(void);
+void player_dma_tiles(player *pl);
 void player_init(player *pl);
 void player_dma_pal(player *pl);
 void player_take_inputs(player *pl, u8 pad_data); // Affect physics variables based on input

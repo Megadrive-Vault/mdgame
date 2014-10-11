@@ -1,9 +1,9 @@
 #include "player.h"
 
-void player_dma_tiles()
+void player_dma_tiles(player *pl)
 {
 	// Load the player tiles
-	VDP_doVRamDMA(player_sprites,0x0000,16*16*PLAYER_NUM_SPRITES);
+	VDP_doVRamDMA(player_sprites + (32*16*pl->tile_offset),pl->tile_index + (32*16 * pl->player_num),16*16*1);
 }
 
 void player_calc_animation(player *pl)
@@ -40,6 +40,10 @@ void player_calc_animation(player *pl)
 			}
 		}
 	}
+	else if (pl->hitstun != 0)
+	{
+		pl->current_anim = PLAYER_ANIM_HURT;
+	}
 	else if (pl->slapcnt != 0)
 	{
 		pl->current_anim = PLAYER_ANIM_PRESLAP;
@@ -52,6 +56,7 @@ void player_calc_animation(player *pl)
 
 void player_animate(player *pl)
 {
+	player_calc_animation(pl);
 	if (pl->hitfreeze != 0)
 	{
 		return;
@@ -60,7 +65,7 @@ void player_animate(player *pl)
 	{
 		pl->flash--;
 	}
-	player_calc_animation(pl);
+	int xmag = pl->dx;
 	switch (pl->current_anim)
 	{
 		case PLAYER_ANIM_STAND:
@@ -122,6 +127,43 @@ void player_animate(player *pl)
 				pl->tile_offset--; 
 			}
 			break;
+		case PLAYER_ANIM_HURT: 
+			if (xmag < 0)
+			{
+				pl->direction = 1;
+				xmag = xmag * -1;
+			}
+			else
+			{
+				pl->direction = 0;
+			}
+			if (pl->dy < 0)
+			{
+				if (pl->dy * -1 > xmag)
+				{
+					pl->tile_offset = PLAYER_ANIM_OFF_HURT_UP;
+				}
+				else
+				{
+					pl->tile_offset = PLAYER_ANIM_OFF_HURT_SIDE;
+				}
+			}
+			else if (pl->dy > 0)
+			{
+				if (pl->dy > xmag)
+				{
+					pl->tile_offset = PLAYER_ANIM_OFF_HURT_DOWN;
+				}
+				else
+				{
+					pl->tile_offset = PLAYER_ANIM_OFF_HURT_SIDE;
+				}
+			}
+			else
+			{
+				pl->tile_offset = PLAYER_ANIM_OFF_HURT_SIDE;
+			}
+			break;
 	}
 }
 
@@ -131,7 +173,7 @@ void player_init(player *pl)
 	
 	pl->sprite_num = 0;
 	pl->palette = 0;
-	pl->tile_index = 0;
+	pl->tile_index = 16 * 32;
 	pl->tile_offset = 0;
 	pl->player_num = 0;
 	
@@ -445,6 +487,11 @@ void player_move(player *pl)
 	}
 } 
 
+void player_update_sprite(player *pl)
+{
+	
+}
+
 void player_draw(player *pl)
 {
 	player_vis(pl);
@@ -454,7 +501,7 @@ void player_draw(player *pl)
 			(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 9 + (16 - (4*PLAYER_TILE_WIDTH)),
 			(pl->y >> PLAYER_RESOLUTION) - ((8*PLAYER_TILE_HEIGHT) - PLAYER_Y2),
 			SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
-			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index + (pl->tile_offset * (PLAYER_TILE_WIDTH*PLAYER_TILE_HEIGHT))),
+			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,(pl->tile_index / 32)+(16*pl->player_num)),
 			pl->sprite_num +1);
 	}
 	else // Don't render
