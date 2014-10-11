@@ -14,9 +14,9 @@
 
 const void* const instrument_table[] =
   {
-	instrument__square,
 	instrument__saw,
-	instrument__piano,
+	instrument__saw,
+	instrument__saw,
 	0
   };
 
@@ -26,7 +26,6 @@ static void load_test_map(void)
 	{
 		for (int x = 0; x < 40; x++)
 		{
-			
 			map[y][x] = 0;
 			if ((x > 37 || x < 3))
 			{ 
@@ -61,26 +60,18 @@ static void load_test_map(void)
 }
 void gameloop(void)
 {
-	load_test_map();
 	memcpy(&map, &default_map, sizeof(u8[32][40]));
-	
-	VDP_drawText("wot u think ur doin on my lawn",8,25);
-	VDP_drawText("u get of my fekin lawn u kids",4,26);
-	
-	VDP_drawText("WELCOME TO SUPER DMA LAND",9,1);
 	
 	player_init(&p1);
 	player_init(&p2);
 	
 	p1.palette = 2;
 	p2.palette = 3;
+	p1.other = &p2;
+	p2.other = &p1;
 	p2.sprite_num = 1;
 	p2.player_num = 1;
-	p1.tile_offset = 0xF;
-	p2.tile_offset = 0xF;
 	ghetto_map_render();
-	
-	player_dma_tiles();
 	
 	int i = 0;
 	// Initialize the sound engine
@@ -99,12 +90,18 @@ void gameloop(void)
 		player_take_inputs(&p2,pad_read(1));
 		player_move(&p1);
 		player_move(&p2);
+		player_collide(&p1);
+		player_collide(&p2);
+		player_slap(&p1);
+		player_slap(&p2);
 		player_animate(&p1);
 		player_animate(&p2);
 		VDP_waitVSync();
 		player_draw(&p1);
 		player_draw(&p2);
 		enemy_update(&e);
+		player_dma_tiles(&p1);
+		player_dma_tiles(&p2);
 		player_dma_pal(&p1);
 		player_dma_pal(&p2);
 		// Enemy update section

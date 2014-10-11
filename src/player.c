@@ -1,9 +1,9 @@
 #include "player.h"
 
-void player_dma_tiles()
+void player_dma_tiles(player *pl)
 {
 	// Load the player tiles
-	VDP_doVRamDMA(player_sprites,0x0000,16*16*PLAYER_NUM_SPRITES);
+	VDP_doVRamDMA(player_sprites + (32*16*pl->tile_offset),pl->tile_index + (32*16 * pl->player_num),16*16*1);
 }
 
 void player_calc_animation(player *pl)
@@ -40,6 +40,10 @@ void player_calc_animation(player *pl)
 			}
 		}
 	}
+	else if (pl->hitstun != 0)
+	{
+		pl->current_anim = PLAYER_ANIM_HURT;
+	}
 	else if (pl->slapcnt != 0)
 	{
 		pl->current_anim = PLAYER_ANIM_PRESLAP;
@@ -53,32 +57,20 @@ void player_calc_animation(player *pl)
 void player_animate(player *pl)
 {
 	player_calc_animation(pl);
-	u8 max = 0;
-	u8 speed = 4;
-	
-//	switch (pl->current_anim)
-//	{
-//		case PLAYER_ANIM_STAND:
-//			//cnt = &(pl->anim_cnt_stand);
-//			max = 64;
-//			break;
-//		case PLAYER_ANIM_RUN:
-//			//cnt = &(pl->anim_cnt_run);
-//			max = 32;
-//			break;
-//		case PLAYER_ANIM_JUMP:
-//			//cnt = &(pl->anim_cnt_jump);
-//			max = 9;
-//			break;
-//		case PLAYER_ANIM_FALL:
-//			//cnt = &(pl->anim_cnt_fall);
-//			max = 9;
-//			break;
-//	}
+	if (pl->hitfreeze != 0)
+	{
+		return;
+	}
+	if (pl->flash != 0)
+	{
+		pl->flash--;
+	}
+	int xmag = pl->dx;
 	switch (pl->current_anim)
 	{
 		case PLAYER_ANIM_STAND:
 			pl->anim_cnt_stand++;
+			pl->anim_cnt_run = 0;
 			if (pl->anim_cnt_stand == 80)
 			{
 				pl->anim_cnt_stand = 0;
@@ -103,9 +95,14 @@ void player_animate(player *pl)
 			break;
 		case PLAYER_ANIM_JUMP:
 			pl->anim_cnt_jump++;
+			pl->anim_cnt_fall = 0;
 			if (pl->anim_cnt_jump == 12)
 			{
 				pl->anim_cnt_jump = 0;
+			}
+			if (!pl->slapok)
+			{
+				pl->anim_cnt_fall = 4;
 			}
 			pl->tile_offset = PLAYER_ANIM_OFF_JUMP + (pl->anim_cnt_jump / 4);
 			break;
@@ -118,16 +115,65 @@ void player_animate(player *pl)
 			pl->tile_offset = PLAYER_ANIM_OFF_FALL + (pl->anim_cnt_fall / 4);
 			break;
 		case PLAYER_ANIM_DASH:
-			pl->tile_offset = PLAYER_ANIM_OFF_RUN + 3;
+			pl->tile_offset = PLAYER_ANIM_OFF_RUN + 2;
+			break;
+		case PLAYER_ANIM_PRESLAP:
+			pl->tile_offset = PLAYER_ANIM_OFF_PRESLAP;
+			break;
+		case PLAYER_ANIM_POSTSLAP:
+			pl->tile_offset = PLAYER_ANIM_OFF_POSTSLAP + 1;
+			if (pl->slapcooldown > PLAYER_SLAP_THRESHHOLD)
+			{
+				pl->tile_offset--; 
+			}
+			break;
+		case PLAYER_ANIM_HURT: 
+			if (xmag < 0)
+			{
+				pl->direction = 1;
+				xmag = xmag * -1;
+			}
+			else
+			{
+				pl->direction = 0;
+			}
+			if (pl->dy < 0)
+			{
+				if (pl->dy * -1 > xmag)
+				{
+					pl->tile_offset = PLAYER_ANIM_OFF_HURT_UP;
+				}
+				else
+				{
+					pl->tile_offset = PLAYER_ANIM_OFF_HURT_SIDE;
+				}
+			}
+			else if (pl->dy > 0)
+			{
+				if (pl->dy > xmag)
+				{
+					pl->tile_offset = PLAYER_ANIM_OFF_HURT_DOWN;
+				}
+				else
+				{
+					pl->tile_offset = PLAYER_ANIM_OFF_HURT_SIDE;
+				}
+			}
+			else
+			{
+				pl->tile_offset = PLAYER_ANIM_OFF_HURT_SIDE;
+			}
 			break;
 	}
 }
 
 void player_init(player *pl)
 {
+	pl->other = NULL;
+	
 	pl->sprite_num = 0;
 	pl->palette = 0;
-	pl->tile_index = 0;
+	pl->tile_index = 16 * 32;
 	pl->tile_offset = 0;
 	pl->player_num = 0;
 	
@@ -137,6 +183,8 @@ void player_init(player *pl)
 	pl->anim_cnt_fall = 0;
 	
 	pl->current_anim = 0;
+	
+	pl->pad_data = 0xFF;
 	
 	
 	pl->osc = 0;
@@ -194,15 +242,23 @@ void player_init(player *pl)
 		}	
 		pl->normal_pal1[i] = pal1[i];
 		pl->normal_pal2[i] = pal2[i];
-		pl->light_pal1[i] = (pal1[i] << 1) | (pal1[i]);
-		pl->light_pal2[i] = (pal2[i] << 1) | (pal2[i]);
+		if (i < 8)
+		{
+			pl->light_pal1[i] = (pal1[i] << 1) | (pal1[i]);
+			pl->light_pal2[i] = (pal2[i] << 1) | (pal2[i]);
+		}
+		else
+		{
+			pl->light_pal1[i] = pal1[i];
+			pl->light_pal2[i] = pal2[i];
+		}
 	}
 }
 
 void player_dma_pal(player *pl)
 {
 	u16 **pal_addr = NULL;
-	if (pl->flash != 0)
+	if ((pl->flash >> 1) & 0x01)
 	{
 		pal_addr = &(pl->white_pal);
 	}
@@ -227,6 +283,7 @@ void player_dma_pal(player *pl)
 
 void player_take_inputs(player *pl, u8 pad_data)
 {
+	pl->pad_data = pad_data;
 	if (pl->hitfreeze != 0) { return; }
 	
 	if (pl->hitstun != 0)
@@ -234,8 +291,6 @@ void player_take_inputs(player *pl, u8 pad_data)
 		// Might do more here later
 		return;
 	}
-	// Priority
-	pl->priority = (!(pad_data & KEY_A))?1:0;
 	
 	// Jump negative edge detection
 	if (!(pad_data & KEY_B))
@@ -254,7 +309,7 @@ void player_take_inputs(player *pl, u8 pad_data)
 		pl->jump_key = 0;
 	}
 	
-	// Horizontal ddx
+	// Horizontal acceleration
 	if (!(pad_data & KEY_RIGHT) && pl->dashcooldown == 0)
 	{
 		pl->direction = 0;
@@ -309,6 +364,7 @@ void player_take_inputs(player *pl, u8 pad_data)
 			pl->dx+= PLAYER_ACCEL<<1;
 		}
 	}
+	// Deceleration
 	else
 	{
 		if (pl->dx >= PLAYER_DECEL)
@@ -354,26 +410,6 @@ void player_take_inputs(player *pl, u8 pad_data)
 			pl->dx = 0;
 		}
 	}
-	
-	// Limits
-	if (pl->dy > PLAYER_MAX_DY)
-	{
-		pl->dy = PLAYER_MAX_DY;
-	}
-	if (pl->dy < PLAYER_MAX_DY * -1)
-	{
-		pl->dy = PLAYER_MAX_DY * -1;
-	}
-	
-	// Dash inputs
-	if (!(pad_data & KEY_C))
-	{
-		if (pl->dashcooldown == 0 && pl->dashok)
-		{
-			pl->dashcooldown = PLAYER_DASHTIME;
-			player_dash_vectors(pl, pad_data);
-		}
-	}
 }
 
 void player_counters(player *pl)
@@ -396,12 +432,19 @@ void player_move(player *pl)
 	{ 
 		return; 
 	}
-	if (pl->hitstun != 0)
-	{
-		return;
-	}
 	player_dash(pl);
 	u8 coltype = 0;
+	
+	// Vectors limits
+	
+	if (pl->dy > PLAYER_MAX_DY)
+	{
+		pl->dy = PLAYER_MAX_DY;
+	}
+	if (pl->dy < PLAYER_MAX_DY * -1)
+	{
+		pl->dy = PLAYER_MAX_DY * -1;
+	}
 	// Actually do the movement now
 	coltype = player_pos_dx(pl);
 	if (coltype == MAP_SOLID)
@@ -444,6 +487,11 @@ void player_move(player *pl)
 	}
 } 
 
+void player_update_sprite(player *pl)
+{
+	
+}
+
 void player_draw(player *pl)
 {
 	player_vis(pl);
@@ -453,7 +501,7 @@ void player_draw(player *pl)
 			(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 9 + (16 - (4*PLAYER_TILE_WIDTH)),
 			(pl->y >> PLAYER_RESOLUTION) - ((8*PLAYER_TILE_HEIGHT) - PLAYER_Y2),
 			SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
-			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index + (pl->tile_offset * (PLAYER_TILE_WIDTH*PLAYER_TILE_HEIGHT))),
+			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,(pl->tile_index / 32)+(16*pl->player_num)),
 			pl->sprite_num +1);
 	}
 	else // Don't render
@@ -468,18 +516,58 @@ void player_draw(player *pl)
 }
 
 
+void player_collide(player *pl)
+{
+	if ((pl->x >> 1) + PLAYER_X2 + PLAYER_SLAP_W < (pl->other->x >> 1) + PLAYER_X1 - PLAYER_SLAP_W)
+	{
+	
+	}
+	else if ((pl->x >> 1) + PLAYER_X1 - PLAYER_SLAP_W > (pl->other->x >> 1) + PLAYER_X2 + PLAYER_SLAP_W)
+	{
+	
+	}
+	else if ((pl->y >> 1) + PLAYER_Y1 - PLAYER_SLAP_H > (pl->other->y >> 1) + PLAYER_Y2)
+	{
+	
+	}
+	else if ((pl->y >> 1) + PLAYER_Y2 < (pl->other->y >> 1) + PLAYER_Y1 - PLAYER_SLAP_H)
+	{
+	
+	}
+	else
+	{
+		if (pl->slapcooldown > PLAYER_SLAP_THRESHHOLD)
+		{
+			pl->other->hitfreeze = 6;
+			pl->other->hitstun = 35;
+			pl->hitfreeze = 6;
+			pl->other->dx = pl->direction ? -4 : 4;
+			
+			if (pl->grounded)
+			{
+				pl->other->dy = -14;
+			}
+			else
+			{
+				pl->other->dy = -1 * (pl->y - pl->other->y);
+				pl->dy = pl->dy >> 1;
+			}
+			
+			pl->other->flash = 20;
+		}
+	}
+}
 
 // PHYSICS SUPPORT FUNCTIONS
 
 
-void player_dash_vectors(player *pl, u8 pad_data)
+void player_dash_vectors(player *pl)
 {
-	// X
-	if (!(pad_data & KEY_RIGHT))
+	if (!(pl->pad_data & KEY_RIGHT))
 	{
 		pl->dx = PLAYER_DASH_THRUST_X;
 	}
-	else if (!(pad_data & KEY_LEFT))
+	else if (!(pl->pad_data & KEY_LEFT))
 	{
 		pl->dx = PLAYER_DASH_THRUST_X * -1;
 	}
@@ -487,11 +575,11 @@ void player_dash_vectors(player *pl, u8 pad_data)
 	{
 		pl->dx = (pl->direction) ? (PLAYER_DASH_THRUST_X * -1) : PLAYER_DASH_THRUST_X;
 	}
-	if (!(pad_data & KEY_DOWN))
+	if (!(pl->pad_data & KEY_DOWN))
 	{
 		pl->dy = PLAYER_DASH_THRUST_Y;
 	}
-	else if (!(pad_data & KEY_UP))
+	else if (!(pl->pad_data & KEY_UP))
 	{
 		pl->dy = 1 + PLAYER_DASH_THRUST_Y * -1;
 	}
@@ -499,7 +587,6 @@ void player_dash_vectors(player *pl, u8 pad_data)
 	{
 		pl->dy = 0;
 	}
-	// Y
 }
 
 void player_ground(player *pl)
@@ -576,12 +663,22 @@ void player_vis(player *pl)
 
 void player_dash(player *pl)
 {
-	if (pl->dashcooldown != 0)
+	
+	// Dash inputs
+	if (!(pl->pad_data & KEY_C))
+	{
+		if (pl->dashcooldown == 0 && pl->dashok)
+		{
+			pl->dashcooldown = PLAYER_DASHTIME;
+			player_dash_vectors(pl);
+		}
+	}
+	if (pl->dashcooldown != 0 )
 	{
 		pl->dashok = 0;
 		pl->dashcooldown--;
 	}
-	if (pl->grounded)
+	if (pl->grounded && (pl->pad_data & KEY_C))
 	{
 		pl->dashok = 1;
 	}
@@ -592,6 +689,37 @@ void check_bounds(u16 *check, u16 limit)
 	if (*check > limit)
 	{
 		*check = limit;
+	}
+}
+
+void player_slap(player *pl)
+{
+	// No slapping is occurring
+	if (pl->slapcooldown == 0 && pl->slapcnt == 0)
+	{
+		if (!(pl->pad_data & KEY_A) && pl->slapok)
+		{
+			pl->slapcnt = PLAYER_SLAPTIME;
+			pl->slapok = 0;
+		}
+		else if ((pl->pad_data & KEY_A))
+		{
+			pl->slapok = 1;
+		}
+	}
+	// Getting ready to slap
+	else if (pl->slapcnt > 0)
+	{
+		// Actually do the slap
+		if (pl->slapcnt == 1)
+		{
+			pl->slapcooldown = PLAYER_SLAP_COOLDOWNTIME;
+		}
+		pl->slapcnt--;
+	}
+	else if (pl->slapcooldown > 0)
+	{
+		pl->slapcooldown--;
 	}
 }
 
