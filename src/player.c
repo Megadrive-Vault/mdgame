@@ -1,5 +1,128 @@
 #include "player.h"
 
+void player_dma_tiles()
+{
+	// Load the player tiles
+	VDP_doVRamDMA(player_sprites,0x0000,16*16*PLAYER_NUM_SPRITES);
+}
+
+void player_calc_animation(player *pl)
+{
+	if (pl->hitstun == 0 && pl->slapcnt == 0 && pl->slapcooldown == 0)
+	{
+		if (pl->dashcooldown != 0)
+		{
+			pl->current_anim = PLAYER_ANIM_DASH;
+		}
+		else
+		{
+			if (pl->grounded)
+			{
+				if (pl->dx != 0)
+				{
+					pl->current_anim = PLAYER_ANIM_RUN;
+				}
+				else
+				{
+					pl->current_anim = PLAYER_ANIM_STAND;
+				}
+			}
+			else
+			{
+				if (pl->dy <= 0)
+				{
+					pl->current_anim = PLAYER_ANIM_JUMP;
+				}
+				else
+				{
+					pl->current_anim = PLAYER_ANIM_FALL;
+				}
+			}
+		}
+	}
+	else if (pl->slapcnt != 0)
+	{
+		pl->current_anim = PLAYER_ANIM_PRESLAP;
+	}
+	else if (pl->slapcooldown != 0)
+	{
+		pl->current_anim = PLAYER_ANIM_POSTSLAP;
+	}
+}
+
+void player_animate(player *pl)
+{
+	player_calc_animation(pl);
+	u8 max = 0;
+	u8 speed = 4;
+	
+//	switch (pl->current_anim)
+//	{
+//		case PLAYER_ANIM_STAND:
+//			//cnt = &(pl->anim_cnt_stand);
+//			max = 64;
+//			break;
+//		case PLAYER_ANIM_RUN:
+//			//cnt = &(pl->anim_cnt_run);
+//			max = 32;
+//			break;
+//		case PLAYER_ANIM_JUMP:
+//			//cnt = &(pl->anim_cnt_jump);
+//			max = 9;
+//			break;
+//		case PLAYER_ANIM_FALL:
+//			//cnt = &(pl->anim_cnt_fall);
+//			max = 9;
+//			break;
+//	}
+	switch (pl->current_anim)
+	{
+		case PLAYER_ANIM_STAND:
+			pl->anim_cnt_stand++;
+			if (pl->anim_cnt_stand == 80)
+			{
+				pl->anim_cnt_stand = 0;
+			}
+			pl->tile_offset = PLAYER_ANIM_OFF_STAND + 1;
+			if (pl->anim_cnt_stand < 30)
+			{
+				pl->tile_offset -= 1;
+			}
+			if (pl->anim_cnt_stand > 40 && pl->anim_cnt_stand < 70)
+			{
+				pl->tile_offset += 1;
+			}
+			break;
+		case PLAYER_ANIM_RUN:
+			pl->anim_cnt_run++;
+			if (pl->anim_cnt_run == 48)
+			{
+				pl->anim_cnt_run = 0;
+			}
+			pl->tile_offset = PLAYER_ANIM_OFF_RUN + (pl->anim_cnt_run / 6);
+			break;
+		case PLAYER_ANIM_JUMP:
+			pl->anim_cnt_jump++;
+			if (pl->anim_cnt_jump == 12)
+			{
+				pl->anim_cnt_jump = 0;
+			}
+			pl->tile_offset = PLAYER_ANIM_OFF_JUMP + (pl->anim_cnt_jump / 4);
+			break;
+		case PLAYER_ANIM_FALL:
+			pl->anim_cnt_fall++;
+			if (pl->anim_cnt_fall == 16)
+			{
+				pl->anim_cnt_fall = 4;
+			}
+			pl->tile_offset = PLAYER_ANIM_OFF_FALL + (pl->anim_cnt_fall / 4);
+			break;
+		case PLAYER_ANIM_DASH:
+			pl->tile_offset = PLAYER_ANIM_OFF_RUN + 3;
+			break;
+	}
+}
+
 void player_init(player *pl)
 {
 	pl->sprite_num = 0;
@@ -8,12 +131,20 @@ void player_init(player *pl)
 	pl->tile_offset = 0;
 	pl->player_num = 0;
 	
+	pl->anim_cnt_stand = 0;
+	pl->anim_cnt_run = 0;
+	pl->anim_cnt_jump = 0;
+	pl->anim_cnt_fall = 0;
+	
+	pl->current_anim = 0;
+	
+	
 	pl->osc = 0;
 	pl->hitstun = 0;
 	pl->flash = 0;
 	pl->hitfreeze = 0;
 	
-	pl->x = 32;
+	pl->x = 96;
 	pl->y = 32;
 	pl->dx = 0;
 	pl->dy = 0;
@@ -39,14 +170,14 @@ void player_init(player *pl)
 	pl->slapok = 1;
 	
 	const u16 pal1[] = {
-		0x0000, 0x0820, 0x04AE, 0x0EEE,
-		0x0000, 0x0820, 0x04AE, 0x0EEE,
+		0x0000, 0x0400, 0x0800, 0x0222,
+		0x0CCC, 0x0EEE, 0x04AE, 0x06CE,
 		0x0000, 0x0820, 0x04AE, 0x0EEE,
 		0x0000, 0x0820, 0x04AE, 0x0EEE
 	};
 	const u16 pal2[] = {
-		0x0000, 0x0026, 0x04AE, 0x0EEE,
-		0x0000, 0x0026, 0x04AE, 0x0EEE,
+		0x0000, 0x0204, 0x0208, 0x0222,
+		0x0CCC, 0x0EEE, 0x04AE, 0x06CE,
 		0x0000, 0x0026, 0x04AE, 0x0EEE,
 		0x0000, 0x0026, 0x04AE, 0x0EEE
 	};
@@ -350,7 +481,7 @@ void player_dash_vectors(player *pl, u8 pad_data)
 	}
 	else if (!(pad_data & KEY_LEFT))
 	{
-		pl->dx = 1 + PLAYER_DASH_THRUST_X * -1;
+		pl->dx = PLAYER_DASH_THRUST_X * -1;
 	}
 	else if (pl->grounded)
 	{
