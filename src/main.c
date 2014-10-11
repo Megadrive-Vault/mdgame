@@ -12,9 +12,9 @@
 
 const void* const instrument_table[] =
   {
-	instrument__square,
 	instrument__saw,
-	instrument__piano,
+	instrument__saw,
+	instrument__saw,
 	0
   };
   
@@ -67,6 +67,8 @@ void gameloop(void)
 	
 	p1.palette = 2;
 	p2.palette = 3;
+	p1.other = &p2;
+	p2.other = &p1;
 	p2.sprite_num = 1;
 	p2.player_num = 1;
 	p1.tile_offset = 0xF;
@@ -88,6 +90,10 @@ void gameloop(void)
 		player_take_inputs(&p2,pad_read(1));
 		player_move(&p1);
 		player_move(&p2);
+		player_collide(&p1);
+		player_collide(&p2);
+		player_slap(&p1);
+		player_slap(&p2);
 		player_animate(&p1);
 		player_animate(&p2);
 		VDP_waitVSync();
