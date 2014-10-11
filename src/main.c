@@ -44,11 +44,7 @@ void gameloop(void)
 	echo_play_bgm(&music__example_track);
 
 	enemy e;
-	enemy e2;
 	enemy_spawn(&e);
-	enemy_spawn(&e2);
-	e2.sprite_num = 3;
-	e2.enemy_num = 2;
 	
 	player *player_a = &p1;
 	player *player_b = &p2;
@@ -65,7 +61,6 @@ void gameloop(void)
 		player_move(player_a);
 		player_move(player_b);
 		enemy_update(&e);
-		enemy_update(&e2);
 		player_collide(player_a);
 		player_collide(player_b);
 		player_slap(player_a);
@@ -78,11 +73,9 @@ void gameloop(void)
 		player_dma_pal(player_a);
 		player_dma_pal(player_b);
 		enemy_dma_tiles(&e);
-		enemy_dma_tiles(&e2);
 		player_draw(player_a);
 		player_draw(player_b);
 		enemy_draw(&e);
-		enemy_draw(&e2);
 		// Enemy update section
 	}
 }
