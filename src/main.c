@@ -20,6 +20,7 @@ const void* const instrument_table[] =
   };
 
 static void load_test_map(void)
+{
 	for (int y = 0; y < 32; y++)
 	{
 		for (int x = 0; x < 40; x++)
