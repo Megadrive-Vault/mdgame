@@ -7,7 +7,6 @@
 #include "echo.h"
 
 // Resources
-#include "sprite_tiles.h"
 #include "music.h"
 #include "instrument.h"
 #include "map.h"
@@ -19,15 +18,15 @@ const void* const instrument_table[] =
 	instrument__piano,
 	0
   };
+
 static void load_test_map(void)
-{
 	for (int y = 0; y < 32; y++)
 	{
 		for (int x = 0; x < 40; x++)
 		{
 			
 			map[y][x] = 0;
-			if (y > 12 && (x > 37 || x < 3))
+			if ((x > 37 || x < 3))
 			{ 
 				map[y][x] = 1;
 			}
@@ -36,7 +35,7 @@ static void load_test_map(void)
 				map[y][x] = 0;
 			}
 	
-			if (y == 27 && x > 8)
+			if (y == 27)
 			{
 				map[y][x] = 1;
 			}
@@ -75,16 +74,11 @@ void gameloop(void)
 	p2.palette = 3;
 	p2.sprite_num = 1;
 	p2.player_num = 1;
-	p1.tile_offset = 1;
-	p2.tile_offset = 1;
+	p1.tile_offset = 0xF;
+	p2.tile_offset = 0xF;
 	ghetto_map_render();
 	
-	// Load the player tiles
-	VDP_doVRamDMA(sprite_tiles,0x0000,16*256);
-	
-	u8 nothing[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	
-	VDP_doVRamDMA(&nothing,0x0000,32);
+	player_dma_tiles();
 	
 	int i = 0;
 	// Initialize the sound engine
@@ -93,23 +87,14 @@ void gameloop(void)
 	while (1)
 	{
 		i++;
-		if (i % 6 == 0)
-		{
-			p1.tile_offset++;
-			p2.tile_offset++;
-			if (p1.tile_offset == 10)
-			{
-				p1.tile_offset = 2;
-				p2.tile_offset = 2;
-			}
-		}
 		p1.sprite_num = i % 2;
 		p2.sprite_num = (i + 1) % 2;
 		player_take_inputs(&p1,pad_read(0));
 		player_take_inputs(&p2,pad_read(1));
 		player_move(&p1);
 		player_move(&p2);
-		// Shows CPU usage, heh
+		player_animate(&p1);
+		player_animate(&p2);
 		VDP_waitVSync();
 		player_draw(&p1);
 		player_draw(&p2);
