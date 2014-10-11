@@ -6,6 +6,7 @@
 #include "gamedata.h"
 #include "mpsg.h"
 #include "globals.h"
+#include "bezier.h"
 
 #include "enemy_sprites.h"
 
@@ -20,12 +21,14 @@
 
 typedef struct enemy
 {
-	u16 x;
-	u16 y;
+	int16_t x;
+	int16_t y;
 
 	u8 direction; // 0 = Rightward, 1 = Leftward
 	u8 phase;
 	u8 flip_curve;
+	point_diff *curve;
+	u16 curve_len;
 
 	u8 state; // 0 = flying about, 1 = after being hit
 	u8 type; // Which "bird", and also which reaction to being hit. TBD

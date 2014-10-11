@@ -71,7 +71,7 @@ if __name__ == "__main__":
     # Insert the beginning of the output header file
     out  = '#ifndef ' + base_output_file.upper() + '_H\n'
     out += '#define ' + base_output_file.upper() + '_H\n'
-    out += 'typedef struct point_diff { int8_t x; int8_t y } point_diff;\n\n'
+    #out += 'typedef struct point_diff { int8_t x; int8_t y } point_diff;\n\n'
     # Iterate over each line, extracting each field
     for line in open(sys.argv[1]):
         match = parser.match(line)

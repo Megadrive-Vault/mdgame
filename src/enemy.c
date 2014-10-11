@@ -2,7 +2,7 @@
 #include "player.h"
 #include "curves.h"
 
-typedef struct point { u16 x; u16 y; } point;
+//typedef struct point { u16 x; u16 y; } point;
 
 static _direction = 1;
 
@@ -20,12 +20,14 @@ void enemy_spawn(enemy *e)
 	e->type = 0;
 	e->sprite_num = 2;
 	e->enemy_num = 1;
+	e->curve = curve_a;
+	e->curve_len = curve_a_len;
 }
 
 void enemy_update(enemy *e)
 {
-	u16 x_offset = curve_a[e->phase].x;
-	u16 y_offset = curve_a[e->phase].y;
+	u16 x_offset = e->curve[e->phase].x;
+	u16 y_offset = e->curve[e->phase].y;
 	// Update X
 	if(e->direction)
 	{
@@ -46,12 +48,24 @@ void enemy_update(enemy *e)
 	}	
 	
 	// Update phase index
-	if(e->phase >= curve_a_len - 1)
+	if(e->phase >= e->curve_len - 1)
 	{
 		// Reset to the beginning of the phase sequence.
 		e->phase = 0;
 		// Alternate curve direction
 		e->flip_curve = !e->flip_curve;
+		if(e->x > 150 && e->x < 300) {
+			e->curve = curve_a;
+			e->curve_len = curve_a_len;
+		} else {
+			e->curve = curve_b;
+			e->curve_len = curve_b_len;
+		}
+		if(e->x > 600) {
+			e->direction = 1;
+		} else if (e->x < -50) {
+			e->direction = 0;
+		}
 	} else {
 		// Proceed to the next phase in the phase sequence.
 		e->phase += 1;
