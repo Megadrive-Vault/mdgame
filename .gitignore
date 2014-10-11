@@ -2,3 +2,4 @@ out/
 emu/
 *~
 run.bat
+res/*.h

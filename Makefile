@@ -38,6 +38,7 @@ SRC_S80+= $(wildcard $(SRC)/*.s80)
 RES_C= $(wildcard $(RES)/*.c)
 RES_S= $(wildcard $(RES)/*.s)
 RES_RC= $(wildcard *.rc)
+RES_BEZ= $(wildcard $(RES)/*.bez)
 RES_RC+= $(wildcard $(RES)/*.rc)
 RES_RES= $(wildcard *.res)
 RES_RES+= $(wildcard $(RES)/*.res)
@@ -60,10 +61,10 @@ FLAGSZ80= -i$(SRC) -i$(INCLUDE) -i$(RES) -i$(LIBSRC) -i$(LIBINCLUDE)
 
 #release: FLAGS= $(DEFAULT_FLAGS) -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fomit-frame-pointer
 release: FLAGS= $(DEFAULT_FLAGS) -O1 -fomit-frame-pointer
-release: out/rom.bin
+release: curves out/rom.bin
 
 debug: FLAGS= $(DEFAULT_FLAGS) -O1 -ggdb -DDEBUG=1
-debug: out/rom.bin out/rom.out out/symbol.txt
+debug: curves out/rom.bin out/rom.out out/symbol.txt
 
 
 all: release
@@ -130,3 +131,7 @@ out/%.o: %.s
 
 %.s: %.o80
 	$(BINTOS) $<
+
+curves: $(wildcard res/*.bez)
+	python util/bezier.py $< $(patsubst %.bez,%.h,$<)
+
