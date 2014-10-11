@@ -75,11 +75,11 @@ void gameloop(void)
 	0x0000, 0x0AA0, 0x04AE, 0x0EEE
 	};
 	
-	u8 nothing[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	u8 nothing[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	
 	VDP_doCRamDMA(&palette,0x0000,4);
 	VDP_doCRamDMA(&palette2,0x0020,4);
-	VDP_doVRamDMA(&nothing,0x0000,16);
+	VDP_doVRamDMA(&nothing,0x0000,32);
 	
 	int i = 0;
 	echo_play_bgm(&music__example_track);
