@@ -28,13 +28,17 @@
 #define PSG_NOTE_A  9
 #define PSG_NOTE_Bb 10
 #define PSG_NOTE_B  11
+ 
+#define SFX_JUMP 1
+#define SFX_LAND 2
+#define SFX_SWING 3
+#define SFX_DASH 4
+#define SFX_HIT 5
 
 // Megadrive PSG functions
 void psg_vol(unsigned char chan, unsigned char vol);
 void psg_pitch(unsigned char chan, unsigned int pitch);
 void psg_tone(unsigned char chan, unsigned char vol, unsigned int pitch);
 void psg_note(unsigned char chan, unsigned char note, unsigned char octave);
-
-void psg_sfx_kernel(void);
 
 #endif
