@@ -1,1 +1,1 @@
-emu\Regen ..\out\rom.bin
+..\emu\Regen ..\mdgame\out\rom.bin
