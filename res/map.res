@@ -1,0 +1,1 @@
+BIN default_map "map/default.map"
