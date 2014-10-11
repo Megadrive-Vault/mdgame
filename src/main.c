@@ -9,6 +9,7 @@
 // Resources
 #include "music.h"
 #include "instrument.h"
+#include "map.h"
 
 const void* const instrument_table[] =
   {
@@ -17,10 +18,8 @@ const void* const instrument_table[] =
 	instrument__saw,
 	0
   };
-  
-  
 
-void gameloop(void)
+static void load_test_map(void)
 {
 	for (int y = 0; y < 32; y++)
 	{
@@ -56,6 +55,13 @@ void gameloop(void)
 			}
 		}
 	}
+	
+
+}
+void gameloop(void)
+{
+	load_test_map();
+	memcpy(&map, &default_map, sizeof(u8[32][40]));
 	
 	VDP_drawText("wot u think ur doin on my lawn",8,25);
 	VDP_drawText("u get of my fekin lawn u kids",4,26);
