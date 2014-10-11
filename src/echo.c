@@ -1,5 +1,5 @@
 // Required headers
-#include <stdint.h>
+#include <genesis.h>
 #include "echoblob.h"
 #include "echo.h"
 

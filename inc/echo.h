@@ -2,7 +2,7 @@
 #define ECHO_H
 
 /* Required headers */
-#include <stdint.h>
+#include <genesis.h>
 
 /* Echo commands */
 enum {
