@@ -74,6 +74,17 @@ Twelve collision points total, 3 per direction.
 typedef struct player player;
 struct player 
 {
+	u16 normal_pal1[16];
+	u16 normal_pal2[16];
+	u16 light_pal1[16];
+	u16 light_pal2[16];
+	u16 white_pal[16];
+	u8 player_num; 
+	u8 hitstun;
+	u8 flash;
+	u8 hitfreeze;
+
+
 	u16 tile_index; // Base VRAM address for graphics
 	u16 tile_offset;
 	u16 sprite_num; 
@@ -106,6 +117,8 @@ struct player
 	
 	u8 vis;
 	
+	u8 osc; // Just counts up all the time
+	
 	u8 slapcooldown; // Helplessness after an attack before player can be active
 	u8 dashcooldown; // Cooldown from a dash
 	u8 slapok;
@@ -116,7 +129,9 @@ player p1;
 player p2;
 
 void player_init(player *pl);
+void player_dma_pal(player *pl);
 void player_take_inputs(player *pl, u8 pad_data); // Affect physics variables based on input
+void player_counters(player *pl);
 void player_move(player *pl); // Run movement routine based on physics info
 void player_draw(player *pl);
 

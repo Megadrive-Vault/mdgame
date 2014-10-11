@@ -6,6 +6,12 @@ void player_init(player *pl)
 	pl->palette = 0;
 	pl->tile_index = 0;
 	pl->tile_offset = 0;
+	pl->player_num = 0;
+	
+	pl->osc = 0;
+	pl->hitstun = 0;
+	pl->flash = 0;
+	pl->hitfreeze = 0;
 	
 	pl->x = 32;
 	pl->y = 32;
@@ -31,10 +37,72 @@ void player_init(player *pl)
 	
 	pl->dashok = 1;
 	pl->slapok = 1;
+	
+	const u16 pal1[] = {
+		0x0000, 0x0820, 0x04AE, 0x0EEE,
+		0x0000, 0x0820, 0x04AE, 0x0EEE,
+		0x0000, 0x0820, 0x04AE, 0x0EEE,
+		0x0000, 0x0820, 0x04AE, 0x0EEE
+	};
+	const u16 pal2[] = {
+		0x0000, 0x0026, 0x04AE, 0x0EEE,
+		0x0000, 0x0026, 0x04AE, 0x0EEE,
+		0x0000, 0x0026, 0x04AE, 0x0EEE,
+		0x0000, 0x0026, 0x04AE, 0x0EEE
+	};
+	
+	for (int i = 0; i < 16; i++)
+	{
+		if (i != 0)
+		{
+			pl->white_pal[i] = 0x0EEE;
+		}
+		else
+		{
+			pl->white_pal[i] = 0x0000;
+		}	
+		pl->normal_pal1[i] = pal1[i];
+		pl->normal_pal2[i] = pal2[i];
+		pl->light_pal1[i] = (pal1[i] << 1) | (pal1[i]);
+		pl->light_pal2[i] = (pal2[i] << 1) | (pal2[i]);
+	}
+}
+
+void player_dma_pal(player *pl)
+{
+	u16 **pal_addr = NULL;
+	if (pl->flash != 0)
+	{
+		pal_addr = &(pl->white_pal);
+	}
+	else if (pl->dashcooldown == 0)
+	{
+		pal_addr = (pl->player_num == 0) ? &(pl->normal_pal1) : &(pl->normal_pal2);
+	}
+	else
+	{
+		if (pl->osc & 0x01)
+		{
+			pal_addr = (pl->player_num == 0) ? &(pl->light_pal1) : &(pl->light_pal2);
+		}
+		else
+		{
+			pal_addr = (pl->player_num == 0) ? &(pl->normal_pal1) : &(pl->normal_pal2);
+		}
+	}
+	
+	VDP_doCRamDMA(pal_addr,(pl->player_num << 5) + 0x0040,16);
 }
 
 void player_take_inputs(player *pl, u8 pad_data)
 {
+	if (pl->hitfreeze != 0) { return; }
+	
+	if (pl->hitstun != 0)
+	{
+		// Might do more here later
+		return;
+	}
 	// Priority
 	pl->priority = (!(pad_data & KEY_A))?1:0;
 	
@@ -177,8 +245,30 @@ void player_take_inputs(player *pl, u8 pad_data)
 	}
 }
 
+void player_counters(player *pl)
+{
+	pl->osc++;
+	if (pl->hitfreeze != 0) 
+	{ 
+		pl->hitfreeze--;
+	}
+	if (pl->hitstun != 0)
+	{
+		pl->hitstun--;
+	}
+}
+
 void player_move(player *pl)
 {
+	player_counters(pl);
+	if (pl->hitfreeze != 0) 
+	{ 
+		return; 
+	}
+	if (pl->hitstun != 0)
+	{
+		return;
+	}
 	player_dash(pl);
 	u8 coltype = 0;
 	// Actually do the movement now
@@ -350,14 +440,7 @@ void player_gravity(player *pl)
 
 void player_vis(player *pl)
 {
-	if (pl->dashcooldown == 0)
-	{
-		pl->vis = 1;
-	}
-	else
-	{
-		pl->vis++;
-	}
+	pl->vis = 1;
 }
 
 void player_dash(player *pl)
@@ -373,6 +456,14 @@ void player_dash(player *pl)
 	}
 }
 
+void check_bounds(u16 *check, u16 limit)
+{
+	if (*check > limit)
+	{
+		*check = limit;
+	}
+}
+
 u8 player_pos_dy(player *pl)
 {
 	// Collision type if it should come up
@@ -385,7 +476,9 @@ u8 player_pos_dy(player *pl)
 		{
 			u16 checkx1 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X1;
 			u16 checkx2 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2;
+			check_bounds(&checkx2,320);
 			u16 checkx3 = (pl->x >> PLAYER_RESOLUTION);
+			check_bounds(&checkx3,320);
 			u16 checky = (pl->y >>  PLAYER_RESOLUTION) + PLAYER_Y2 + 1;
 			coltype = map_collision(checkx1, checky);
 			if (coltype) { break; };
@@ -410,8 +503,10 @@ u8 player_neg_dy(player *pl)
 		for (int l = pl->dy * -1; l != 0; l--)
 		{
 			u16 checkx1 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X1;
+			check_bounds(&checkx1,320);
 			u16 checkx2 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2;
 			u16 checkx3 = (pl->x >> PLAYER_RESOLUTION);
+			check_bounds(&checkx3,320);
 			u16 checky = (pl->y >>  PLAYER_RESOLUTION) + PLAYER_Y1 - 1;
 			coltype = map_collision(checkx1, checky);
 			if (coltype) { break; };

@@ -28,7 +28,7 @@ void gameloop(void)
 			
 			map[y][x] = 0;
 			if (y > 12 && (x > 37 || x < 3))
-			{
+			{ 
 				map[y][x] = 1;
 			}
 			if (y > 19 && x > 37)
@@ -56,37 +56,27 @@ void gameloop(void)
 		}
 	}
 	
-	
 	VDP_drawText("wot u think ur doin on my lawn",8,25);
 	VDP_drawText("u get of my fekin lawn u kids",4,26);
 	
-	VDP_drawText("WELCOME TO CHAMP CLAMPS ROUND TSU",5,1);
+	VDP_drawText("WELCOME TO SUPER DMA LAND",9,1);
 	
 	player_init(&p1);
 	player_init(&p2);
 	
-	p1.palette = 0;
-	p2.palette = 1;
+	p1.palette = 2;
+	p2.palette = 3;
 	p2.sprite_num = 1;
-	p1.tile_index = 0;
-	p2.tile_index = 0;
+	p2.player_num = 1;
+	p1.tile_offset = 1;
+	p2.tile_offset = 1;
 	ghetto_map_render();
 	
 	// Load the player tiles
 	VDP_doVRamDMA(sprite_tiles,0x0000,16*256);
 	
-	// Make a faux player palette
-	u16 palette[] = {
-	0x0000, 0x0A20, 0x04AE, 0x0EEE
-	};
-	u16 palette2[] = {
-	0x0000, 0x0AA0, 0x04AE, 0x0EEE
-	};
-	
 	u8 nothing[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	
-	VDP_doCRamDMA(&palette,0x0000,4);
-	VDP_doCRamDMA(&palette2,0x0020,4);
 	VDP_doVRamDMA(&nothing,0x0000,32);
 	
 	int i = 0;
@@ -112,9 +102,12 @@ void gameloop(void)
 		player_take_inputs(&p2,pad_read(1));
 		player_move(&p1);
 		player_move(&p2);
+		// Shows CPU usage, heh
 		VDP_waitVSync();
 		player_draw(&p1);
 		player_draw(&p2);
+		player_dma_pal(&p1);
+		player_dma_pal(&p2);
 	}
 }
 
