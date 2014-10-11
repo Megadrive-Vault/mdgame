@@ -5,7 +5,7 @@ void player_init(player *pl)
 	pl->sprite_num = 0;
 	pl->palette = 0;
 	pl->tile_index = 0;
-	pl->tile_index = 0;
+	pl->tile_offset = 0;
 	
 	pl->x = 32;
 	pl->y = 32;
@@ -229,19 +229,19 @@ void player_draw(player *pl)
 	if (pl->vis & 1)
 	{
 		VDP_setSpriteDirect(pl->sprite_num,
-			(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 1,
+			(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 9 + (16 - (4*PLAYER_TILE_WIDTH)),
 			(pl->y >> PLAYER_RESOLUTION) - ((8*PLAYER_TILE_HEIGHT) - PLAYER_Y2),
 			SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
-			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index),
+			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index + (pl->tile_offset * (PLAYER_TILE_WIDTH*PLAYER_TILE_HEIGHT))),
 			pl->sprite_num +1);
 	}
-	else
+	else // Don't render
 	{
 		VDP_setSpriteDirect(pl->sprite_num,
 			-128,
 			-128,
-			SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
-			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,pl->tile_index),
+			SPRITE_SIZE(1,1),
+			TILE_ATTR_FULL(0,0,0,0,0),
 			pl->sprite_num +1);
 	}
 }

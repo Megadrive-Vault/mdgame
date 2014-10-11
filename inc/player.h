@@ -38,8 +38,8 @@
 #define PLAYER_HIGRAV_WAIT  0
 #define PLAYER_LOWGRAV_WAIT	2
 
-#define PLAYER_TILE_WIDTH 	2
-#define PLAYER_TILE_HEIGHT 	3
+#define PLAYER_TILE_WIDTH 	4
+#define PLAYER_TILE_HEIGHT 	4
 
 /*
 Player collision points relative to (center,bottom) in (x,y)
@@ -74,8 +74,9 @@ Twelve collision points total, 3 per direction.
 typedef struct player player;
 struct player 
 {
-	u16 sprite_num;
-	u16 tile_index;
+	u16 tile_index; // Base VRAM address for graphics
+	u16 tile_offset;
+	u16 sprite_num; 
 	u8 palette;
 	u8 direction; // 0 is facing right, 1 is facing left
 	

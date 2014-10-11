@@ -56,19 +56,35 @@ void gameloop(void)
 	p1.palette = 1;
 	p2.palette = 2;
 	p2.sprite_num = 1;
-	p1.tile_index = 1;
+	p1.tile_index = 0;
 	p2.tile_index = 1;
 	ghetto_map_render();
 	
+	// Load the player tiles
+	VDP_doVRamDMA(sprite_tiles,0x0000,16*256);
+	
+	// Make a faux player palette
+	u16 palette[] = {
+	0x0000, 0x0A20, 0x04AE, 0x0EEE
+	};
+	u16 palette2[] = {
+	0x0000, 0x0A20, 0x04AE, 0x0EEE
+	};
+	
+	VDP_doCRamDMA(&palette,0x0010,4);
 	
 	int i = 0;
 
 	while (1)
 	{
 		i++;
-		if (i % 8 == 0)
+		if (i % 6 == 0)
 		{
-			p1.tile_index = (i >> 2)%16;
+			p1.tile_offset++;
+			if (p1.tile_offset == 10)
+			{
+				p1.tile_offset = 2;
+			}
 			p2.tile_index = (i >> 2)%16;
 		}
 		p1.sprite_num = i % 2;
@@ -86,7 +102,6 @@ void gameloop(void)
 int main(void)
 {
 	VDP_init();
-	VDP_doVRamDMA(sprite_tiles,0x0000,16*64);
 	gameloop();
 	
 	while(1)
