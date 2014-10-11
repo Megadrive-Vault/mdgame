@@ -173,7 +173,7 @@ void player_animate(player *pl)
 void player_init(player *pl)
 {
 	pl->other = NULL;
-	
+	pl->slaps = 0;
 	pl->sprite_num = 0;
 	pl->palette = 0;
 	pl->tile_index = 16 * 32;
@@ -299,7 +299,7 @@ void player_take_inputs(player *pl, u8 pad_data)
 	if (!(pad_data & KEY_B))
 	{
 		if (pl->jump_key == 0)
-		{
+		{	
 			pl->jump_key = 1;
 		}
 		else if (pl->jump_key == 1)
@@ -573,11 +573,18 @@ void player_collide(player *pl)
 	{
 		if (pl->slapcooldown > PLAYER_SLAP_THRESHHOLD)
 		{
+			pl->slaps++;
 			pl->other->slapcooldown = 0;
 			pl->other->slapcnt = 0;
 			pl->other->hitfreeze = 6;
 			pl->hitfreeze = 6;
-			pl->other->dx = (pl->direction ? -4 : 4) + (pl->dx / 2);
+			pl->other->dx = (pl->direction ? -2 : 2) + (pl->dx / 2);
+			if ((pl->direction == 0 && !(pl->pad_data & KEY_RIGHT)) || 
+				(pl->direction == 1 && !(pl->pad_data & KEY_LEFT)))
+			{
+				pl->other->dx += (pl->direction ? -4 : 4);
+			}
+			
 			int magx = pl->dx;
 			if (magx < 0)
 			{
@@ -591,6 +598,14 @@ void player_collide(player *pl)
 			else
 			{
 				pl->other->dy = -1 * (pl->y - pl->other->y);
+				if (!(pl->pad_data & KEY_UP))
+				{
+					pl->other->dy -= 4;
+				}
+				if (!(pl->pad_data & KEY_DOWN))
+				{
+					pl->other->dy += 5;
+				}
 				pl->dy = pl->dy >> 1;
 			}
 			pl->other->hitstun = 35 + magx;
@@ -709,7 +724,7 @@ void player_dash(player *pl)
 	// Dash inputs
 	if (!(pl->pad_data & KEY_C))
 	{
-		if (pl->dashcooldown == 0 && pl->dashok)
+		if (pl->dashcooldown == 0 && pl->dashok && pl->hitstun == 0)
 		{
 			pl->dashcooldown = PLAYER_DASHTIME;
 			player_dash_vectors(pl);

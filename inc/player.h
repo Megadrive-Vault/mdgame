@@ -89,6 +89,8 @@ struct player
 {
 	player *other;
 
+	u16 slaps; // How many slaps this player got
+	
 	// Palettes; last 8 colors used by other sprites (enemies, etc)
 	u16 normal_pal1[16]; // P1
 	u16 normal_pal2[16]; // P2
@@ -98,6 +100,7 @@ struct player
 	u8 hitstun; // Player is knocked around whiel hurt, can't press buttons
 	u8 flash; // Invincibility after damage?
 	u8 hitfreeze; 
+	
 	
 	u8 current_anim;
 	u8 anim_cnt_stand;
