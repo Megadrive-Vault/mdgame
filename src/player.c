@@ -139,7 +139,7 @@ void player_animate(player *pl)
 			}
 			if (pl->dy < 0)
 			{
-				if (pl->dy * -1 > xmag)
+				if (pl->dy * -1 > xmag + 3)
 				{
 					pl->tile_offset = PLAYER_ANIM_OFF_HURT_UP;
 				}
@@ -150,7 +150,7 @@ void player_animate(player *pl)
 			}
 			else if (pl->dy > 0)
 			{
-				if (pl->dy > xmag)
+				if (pl->dy > xmag + 3)
 				{
 					pl->tile_offset = PLAYER_ANIM_OFF_HURT_DOWN;
 				}
@@ -219,12 +219,12 @@ void player_init(player *pl)
 	
 	const u16 pal1[] = {
 		0x0000, 0x0400, 0x0800, 0x0222,
-		0x0CCC, 0x0EEE, 0x04AE, 0x06CE,
+		0x0CCC, 0x0EEE, 0x029C, 0x06CE,
 		0x0000, 0x0820, 0x04AE, 0x0EEE,
 		0x0000, 0x0820, 0x04AE, 0x0EEE
 	};
 	const u16 pal2[] = {
-		0x0000, 0x0204, 0x0208, 0x0222,
+		0x0000, 0x0204, 0x0208, 0x028C,
 		0x0CCC, 0x0EEE, 0x04AE, 0x06CE,
 		0x0000, 0x0026, 0x04AE, 0x0EEE,
 		0x0000, 0x0026, 0x04AE, 0x0EEE
@@ -449,25 +449,53 @@ void player_move(player *pl)
 	coltype = player_pos_dx(pl);
 	if (coltype == MAP_SOLID)
 	{
-		pl->dx = 0;
+		if (pl->hitstun == 0)
+		{
+			pl->dx = 0;
+		}
+		else
+		{
+			pl->dx = pl->dx * -1;
+		}
 	}
 	
 	coltype = player_neg_dx(pl);
 	if (coltype == MAP_SOLID)
 	{
-		pl->dx = 0;
+		if (pl->hitstun == 0)
+		{
+			pl->dx = 0;
+		}
+		else
+		{
+			pl->dx = pl->dx * -1;
+		}
 	}
 	
 	coltype = player_pos_dy(pl);
 	if (coltype == MAP_SOLID)
 	{
-		pl->dy = 0;
+		if (pl->hitstun == 0)
+		{
+			pl->dy = 0;
+		}
+		else
+		{
+			pl->dy = pl->dy * -1;
+		}
 	}
 	
 	coltype = player_neg_dy(pl);
 	if (coltype == MAP_SOLID)
 	{
-		pl->dy = (pl->dy >> 1) * -1;
+		if (pl->hitstun == 0)
+		{
+			pl->dy = 0;
+		}
+		else
+		{
+			pl->dy = pl->dy * -1;
+		}
 	}
 	// Terminate a fall when landing
 	if (pl->grounded && pl->dy > 0)
@@ -539,9 +567,14 @@ void player_collide(player *pl)
 		if (pl->slapcooldown > PLAYER_SLAP_THRESHHOLD)
 		{
 			pl->other->hitfreeze = 6;
-			pl->other->hitstun = 35;
 			pl->hitfreeze = 6;
-			pl->other->dx = pl->direction ? -4 : 4;
+			pl->other->dx = (pl->direction ? -4 : 4) + (pl->dx / 2);
+			
+			int magx = pl->dx;
+			if (magx < 0)
+			{
+				magx = magx * -1;
+			}
 			
 			if (pl->grounded)
 			{
@@ -552,6 +585,7 @@ void player_collide(player *pl)
 				pl->other->dy = -1 * (pl->y - pl->other->y);
 				pl->dy = pl->dy >> 1;
 			}
+			pl->other->hitstun = 35 + magx;
 			
 			pl->other->flash = 20;
 		}
