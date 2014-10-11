@@ -24,6 +24,12 @@ void enemy_spawn(enemy *e)
 	// Direction alternates between spawned enemies
 	e->direction = (_direction = !_direction);
 	e->phase = 0;
+	e->anim_frame = 1;
+	e->anim_cnt = 0;
+	e->state = 0;
+	e->type = 0;
+	e->sprite_num = 2;
+	e->enemy_num = 1;
 }
 
 void enemy_update(enemy *e)
@@ -49,22 +55,25 @@ void enemy_update(enemy *e)
 	} else {
 		// Proceed to the next phase in the phase sequence.
 		e->phase += 1;
-	}
-	enemy_draw(e);
+	};
+}
+
+void enemy_dma_tiles(enemy *e)
+{
+	// Load the player tiles
+	u8 num_tiles = ENEMY_TILE_WIDTH * ENEMY_TILE_HEIGHT;
+	u16 size = (16 * num_tiles);
+	u16 *src = enemy_sprites + (32 * ((ENEMY_TILE_WIDTH * ENEMY_TILE_HEIGHT) * (8*e->type) + (ENEMY_TILE_WIDTH * ENEMY_TILE_HEIGHT) * (e->anim_frame)));
+	VDP_doVRamDMA(src,ENEMY_BASE_VRAM_INDEX + (2 * size * e->enemy_num),size);
 }
 
 void enemy_draw(enemy *e)
 {
-
-	u8 palette = 0;
-	u8 priority = 1;
-	u8 tile_index = 0;
-	u8 tile_offset = 0;
-	
-	VDP_setSpriteDirect(0,
-						(e->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 9 + (16 - (4*PLAYER_TILE_WIDTH)),
-						(e->y >> PLAYER_RESOLUTION) - ((8*PLAYER_TILE_HEIGHT) - PLAYER_Y2),
-						SPRITE_SIZE(PLAYER_TILE_WIDTH, PLAYER_TILE_HEIGHT),
-						TILE_ATTR_FULL(palette,priority,0,e->direction,tile_index + (tile_offset * (PLAYER_TILE_WIDTH*PLAYER_TILE_HEIGHT))),
-						1);
+	int tile_addr = (ENEMY_BASE_VRAM_INDEX / 32)+((ENEMY_TILE_WIDTH * ENEMY_TILE_HEIGHT) * e->enemy_num);
+	VDP_setSpriteDirect(e->sprite_num,
+		(e->x >> PLAYER_RESOLUTION) + (16 - (4*ENEMY_TILE_WIDTH)),
+		(e->y >> PLAYER_RESOLUTION) - ((8*ENEMY_TILE_HEIGHT)),
+		SPRITE_SIZE(ENEMY_TILE_WIDTH, ENEMY_TILE_HEIGHT),
+		TILE_ATTR_FULL((e->type & 0x01) + 2,0,0,e->direction,tile_addr),
+		e->sprite_num +1);
 }
