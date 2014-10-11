@@ -86,8 +86,8 @@ void gameloop(void)
 int main(void)
 {
 	VDP_init();
+	VDP_doVRamDMA(sprite_tiles,0x0000,16*64);
 	gameloop();
-	VDP_doVRamDMA(sprite_tiles,0x0000,16);
 	
 	while(1)
 	{
