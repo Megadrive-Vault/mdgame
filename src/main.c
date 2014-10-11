@@ -78,7 +78,7 @@ void gameloop(void)
 	VDP_doCRamDMA(&palette,0x0010,4);
 	
 	int i = 0;
-
+	echo_play_bgm(&music__example_track);
 	while (1)
 	{
 		i++;
@@ -103,20 +103,20 @@ void gameloop(void)
 	}
 }
 
-const void **instrument_table =
+const void* const instrument_table[] =
   {
-    instrument__square,
-    instrument__saw,
-    instrument__piano,
-    0
+	instrument__square,
+	instrument__saw,
+	instrument__piano,
+	0
   };
 int main(void)
 {
 	VDP_init();
 	gameloop();
 
-        // Initialize the sound engine
-        echo_init(instrument_table);
+	// Initialize the sound engine
+	echo_init(instrument_table);
 	while(1)
 	{
 		VDP_waitVSync();
