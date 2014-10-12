@@ -22,3 +22,4 @@ void ghetto_map_render()
 		}
 	}
 }
+
