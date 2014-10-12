@@ -19,7 +19,7 @@ void load_font(u16 plan, u8 pal)
 	
 	// Font palette
 	u16 fpal[] = {
-		0x0000, 0x0240, 0x0282, 0x02E4,
+		0x0000, 0x0240, 0x0482, 0x08E4,
 		0x0204, 0x0468, 0x06AE, 0x0EEE,
 		0x0600, 0x0A20, 0x0C60, 0x0EC2,
 		0x0004, 0x004A, 0x028E, 0x0000
@@ -32,7 +32,7 @@ void load_font(u16 plan, u8 pal)
 	VDP_doVRamDMA(font_tiles,(plan == VDP_PLAN_A ? FG_BASE_VRAM_INDEX : BG_BASE_VRAM_INDEX),size);
 }
 
-void bg_dma_tiles(void)
+void bg_dma_tiles()
 {
 
 	u16 pal1[] = {

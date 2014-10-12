@@ -100,6 +100,19 @@ static u8 menu(void)
 	return 1;
 }
 
+#define PLAYER_MAX_SLAPS 20
+
+void show_health_bars(void)
+{
+	
+	VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(0,1,0,0,0x530 + ((PLAYER_MAX_SLAPS - p1.total_slaps)%10)),2,1);
+	VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(0,1,0,0,0x530 + (((PLAYER_MAX_SLAPS - p1.total_slaps)/10)%10)),1,1);
+	VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(0,1,0,0,0x530 + ((PLAYER_MAX_SLAPS - p2.total_slaps)%10)),39,1);
+	VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(0,1,0,0,0x530 + (((PLAYER_MAX_SLAPS - p2.total_slaps)/10)%10)),38,1);
+			
+}
+
+
 static void game(void)
 {
 	// TODO: Clean up game function.
@@ -138,8 +151,9 @@ static void game(void)
 	echo_init(default_instrument_set);
 	echo_play_bgm(&music__bgm); // TODO: Possibly adjust this convention just like instrument.
 	
-	while (timer < (60 * 60 * 2))
+	while (p1.total_slaps < PLAYER_MAX_SLAPS && p1.total_slaps < PLAYER_MAX_SLAPS)
 	{
+		show_health_bars();
 		spawn_cnt++;
 		if (spawn_cnt == ENEMY_SPAWN_TIME)
 		{
@@ -162,8 +176,8 @@ static void game(void)
 		player_collide(player_b);
 		player_slap(player_a);
 		player_slap(player_b);
-		enemy_check_players(&e, player_a);
-		enemy_check_players(&e, player_b);
+		//enemy_check_players(&e, player_a);
+		//enemy_check_players(&e, player_b);
 		player_animate(player_a);
 		player_animate(player_b);
 		VDP_waitVSync();
@@ -198,7 +212,7 @@ static void game(void)
 	map_init(&results_map_set);
 	p1.x = 24 * 16;
 	p2.x = 24 * 16;
-	if (p1.total_slaps >= p2.total_slaps)
+	if (p1.total_slaps <= p2.total_slaps)
 	{
 		p1.y = 13 * 16;
 		p2.y = 17 * 16;

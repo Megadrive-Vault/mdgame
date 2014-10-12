@@ -5,6 +5,9 @@
   <property key="viewStatusBar" value="true"/>
   <property key="viewToolBar" value="true"/>
   <property key="maxRecentFiles" value="10"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\fg_tiles.bin"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\enemy_sprites.bin"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfxlin\enemies.bin"/>
   <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\bg_tiles.bin"/>
   <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\player_sprites.bin"/>
   <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\pl.bin"/>

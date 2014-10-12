@@ -1,2 +1,5 @@
 BIN music__bgm "music/bgm.esf"
 BIN sfx__hit "music/sfx-hit.esf"
+BIN sfx__jump "music/sfx-jump.esf"
+BIN sfx__slap "music/sfx-slap.esf"
+BIN sfx__dash "music/sfx-dash.esf"

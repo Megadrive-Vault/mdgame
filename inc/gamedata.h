@@ -14,5 +14,7 @@
 #define FG_NUM_TILES 128
 
 u8 map_collision(u16 x, u16 y);
+void load_font(u16 plan, u8 pal);
+void bg_dma_tiles(void);
 
 #endif

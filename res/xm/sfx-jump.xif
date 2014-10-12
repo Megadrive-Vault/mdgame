@@ -1,6 +1,6 @@
 # Created by XM2ESFGUI
 # FROM DAT OERG866 YEYEYE
-FILE "C:\Users\Moffitt\Documents\GitHub\mdgame\res\xm\sfx-hit.xm"
+FILE "C:\Users\Moffitt\Documents\GitHub\mdgame\res\xm\sfx-jump.xm"
 TYPE SFX NOLOOP
 TEMPO 1
 PSG 2

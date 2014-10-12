@@ -48,7 +48,11 @@ void player_calc_animation(player *pl)
 		pl->current_anim = PLAYER_ANIM_HURT;
 	}
 	else if (pl->slapcnt != 0)
-	{
+	{	
+		if (pl->slapcnt == 1)
+		{
+			echo_play_sfx(sfx__slap);
+		}
 		pl->current_anim = PLAYER_ANIM_PRESLAP;
 	}
 	else if (pl->slapcooldown != 0)
@@ -300,6 +304,7 @@ void player_take_inputs(player *pl, u8 pad_data)
 	{
 		if (pl->jump_key == 0)
 		{	
+			echo_play_sfx(sfx__jump);
 			pl->button_count++;
 			pl->jump_key = 1;
 		}
@@ -626,7 +631,7 @@ void player_collide(player *pl)
 	}
 	else
 	{
-		if (pl->slapcooldown > PLAYER_SLAP_THRESHHOLD)
+		if (pl->other->flash == 0 && pl->slapcooldown > PLAYER_SLAP_THRESHHOLD)
 		{
 			hit_other_player(pl);
 		}
@@ -745,6 +750,7 @@ void player_dash(player *pl)
 	{
 		if (pl->dashcooldown == 0 && pl->dashok && pl->hitstun == 0)
 		{
+			echo_play_sfx(sfx__dash);
 			pl->dashcooldown = PLAYER_DASHTIME;
 			player_dash_vectors(pl);
 		}
