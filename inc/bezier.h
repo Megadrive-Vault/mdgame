@@ -1,6 +1,6 @@
 #ifndef BEZIER_H
 #define BEZIER_H
-#include <genesis.h>
+#include "includes.h"
 
 // Types and structs //
 typedef struct point_diff

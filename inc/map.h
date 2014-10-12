@@ -1,5 +1,6 @@
 #ifndef MAP_H
 #define MAP_H
+#include "includes.h"
 
 // Types and structs //
 typedef u8 game_map[32][40];

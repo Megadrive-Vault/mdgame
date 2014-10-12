@@ -1,4 +1,4 @@
-#include "includes.h"
+#include "gamedata.h"
 
 u8 map_collision(u16 x, u16 y)
 {
@@ -32,11 +32,6 @@ void load_font(u16 plan, u8 pal)
 	VDP_doVRamDMA(font_tiles,(plan == VDP_PLAN_A ? FG_BASE_VRAM_INDEX : BG_BASE_VRAM_INDEX),size);
 }
 
-<<<<<<< HEAD
-const u16 abc[] = { 0x0002 << 1 };
-
-=======
->>>>>>> 1c5d7bcecba107ae51bbc9a13ecf91737e0f280d
 void bg_dma_tiles(void)
 {
 
@@ -67,29 +62,3 @@ void bg_dma_tiles(void)
 	src = fg_tiles;
 	VDP_doVRamDMA(src,FG_BASE_VRAM_INDEX,size);
 }
-
-<<<<<<< HEAD
-=======
-void plot_map(void)
-{	
-	VDP_clearPlan(VDP_PLAN_A,0);
-	VDP_clearPlan(VDP_PLAN_B,0);
-	
-	for (u8 map_y = 0; map_y < 28; map_y++)
-	{
-		for (u8 map_x = 0; map_x < 40; map_x++)
-		{
-			VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(fgmap[map_y][map_x]>>7,1,0,0,(FG_BASE_VRAM_INDEX/32) + (fgmap[map_y][map_x] & 0x7F)),map_x,map_y);
-			VDP_setTileMapXY(VDP_PLAN_B,TILE_ATTR_FULL(bgmap[map_y][map_x]>>7,0,0,0,(BG_BASE_VRAM_INDEX/32) + (bgmap[map_y][map_x] & 0x7F)),map_x,map_y);
-		}
-	}
-}
-
-
-void load_maps(void)
-{
-	memcpy(&map, &default_map, sizeof(u8[32][40]));
-	memcpy(&fgmap, &map_foreground, sizeof(u8[32][40]));
-	memcpy(&bgmap, &map_background, sizeof(u8[32][40]));
-}
->>>>>>> 1c5d7bcecba107ae51bbc9a13ecf91737e0f280d

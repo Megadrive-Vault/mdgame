@@ -1,6 +1,6 @@
 #ifndef MPSG_H
 #define MPSG_H
-#include <genesis.h>
+#include "includes.h"
 
 // Base note frequencies - tuned to 4th octave
 #define PSG_BASE_C 0x1AC

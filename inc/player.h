@@ -1,13 +1,6 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-
-#include <genesis.h>
-#include "mpad.h"
-#include "gamedata.h"
-#include "mpsg.h"
-#include "globals.h"
-
-#include "gfx.h"
+#include "includes.h"
 
 #define PLAYER_NUM_SPRITES 27
 

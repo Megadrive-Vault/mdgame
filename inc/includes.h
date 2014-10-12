@@ -13,10 +13,12 @@
 #include "player.h"
 #include "globals.h"
 #include "enemy.h"
+#include "bezier.h"
 
 // Resources
 #include "music_res.h"
 #include "instrument_res.h"
 #include "map_res.h"
+#include "gfx_res.h"
 
 #endif
