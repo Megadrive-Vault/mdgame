@@ -36,30 +36,30 @@ static void init()
 static void intro(void)
 {
 	// TODO: Create intro.
-	title_screen();
+	return title_screen();
 }
 
 static void title_screen(void)
 {
 	// TODO: Create title screen.
-	menu();
+	return menu();
 }
 
 static void menu(void)
 {
 	
 	// TODO: Create menu. 
-	game();
+	return game();
 }
 
 static void game(void)
 {
 	// TODO: Clean up game function.
 	map_init(&default_map_set);
-	
+
 	player_init(&p1);
 	player_init(&p2);
-	
+
 	p1.palette = 2;
 	p2.palette = 3;
 	p1.other = &p2;
@@ -67,16 +67,16 @@ static void game(void)
 	p2.sprite_num = 1;
 	p2.player_num = 1;
 	p2.x = 512;
-	
 	int i = 0;
 
 	enemy_t e;
 	enemy_spawn(&e);
-	
+
 	player *player_a = &p1;
 	player *player_b = &p2;
-	
+
 	bg_dma_tiles();
+
 	while (1)
 	{
 		i++;
