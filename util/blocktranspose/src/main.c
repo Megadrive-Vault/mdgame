@@ -14,7 +14,7 @@
 
 int main(int argc, char **argv)
 {
-	if(argc != 6)
+	if(argc != (OUTFILE_ARG + 1))
 	{
 		printf("Usage: blocktranspose rows columns infile outfile\n");
 		return -1;
@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 	{
 		for(unsigned int j = 0; j < columns; j++)
 		{
-			if(fwrite((mat + (i * BYTES_PER_BLOCK) + (j * columns * BYTES_PER_BLOCK)), BYTES_PER_BLOCK, 1, outfile) != BYTES_PER_BLOCK)
+			if(!(fwrite((mat + (i * BYTES_PER_BLOCK) + (j * columns * BYTES_PER_BLOCK)), BYTES_PER_BLOCK, 1, outfile)))
 			{
 				printf("Error: Write fragmentation\n");
 				free(mat);
