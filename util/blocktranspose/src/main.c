@@ -56,27 +56,36 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	size_t elems_read = fread(mat, BYTES_PER_BLOCK, elems, infile);
-	if(elems_read != elems)
-	{
-		printf("Error: fread() read %zu blocks when %d were expected\n", elems_read, elems);
-		free(mat);
-		fclose(infile);
-		fclose(outfile);
-		return -1;
-	}
+	size_t elems_read = 0;
 
-	for(unsigned int i = 0; i < rows; i++)
+	while(1)
 	{
-		for(unsigned int j = 0; j < columns; j++)
+		elems_read = fread(mat, BYTES_PER_BLOCK, elems, infile);
+		if(elems_read == 0)
 		{
-			if(!(fwrite((mat + (i * BYTES_PER_BLOCK) + (j * columns * BYTES_PER_BLOCK)), BYTES_PER_BLOCK, 1, outfile)))
+			break;
+		}
+		else if(elems_read != elems)
+		{
+			printf("Error: fread() read %zu blocks when %d were expected\n", elems_read, elems);
+			free(mat);
+			fclose(infile);
+			fclose(outfile);
+			return -1;
+		}
+
+		for(unsigned int i = 0; i < rows; i++)
+		{
+			for(unsigned int j = 0; j < columns; j++)
 			{
-				printf("Error: Write fragmentation\n");
-				free(mat);
-				fclose(infile);
-				fclose(outfile);
-				return -1;
+				if(!(fwrite((mat + (i * BYTES_PER_BLOCK) + (j * columns * BYTES_PER_BLOCK)), BYTES_PER_BLOCK, 1, outfile)))
+				{
+					printf("Error: Write fragmentation\n");
+					free(mat);
+					fclose(infile);
+					fclose(outfile);
+					return -1;
+				}
 			}
 		}
 	}
