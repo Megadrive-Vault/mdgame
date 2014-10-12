@@ -1,10 +1,10 @@
 # Created by XM2ESFGUI
 # FROM DAT OERG866 YEYEYE
-FILE "C:\Users\Moffitt\Desktop\shoujoutachi.xm"
+FILE "C:\shoujoutachi.xm"
 TYPE BGM LOOP
 TEMPO 11
 PSG 0
-NOISE 0
+NOISE 5
 FM 5
 PCM 0
 FM1 1

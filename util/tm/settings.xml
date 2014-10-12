@@ -5,13 +5,7 @@
   <property key="viewStatusBar" value="true"/>
   <property key="viewToolBar" value="true"/>
   <property key="maxRecentFiles" value="10"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\Dingus"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\WhaleDude"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\RoboPlatform"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\Sega"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\mdgame\res\gfx-wip\player-linear.bin"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\tm6"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\mdgame\util\tm5"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\RoboToiletSnake"/>
-  <property key="recentFile" value="C:\Users\Michael Swan\Documents\mdgame\res\gfx-wip\enemy-test-linear.bin"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\bg_tiles.bin"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\out.bin"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\player_sprites.bin"/>
 </settings>
