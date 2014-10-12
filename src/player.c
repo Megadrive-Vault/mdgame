@@ -207,7 +207,7 @@ void player_init(player *pl)
 	pl->accel_wait = 0;
 	pl->decel_wait = 0;
 	
-	pl->priority = 1;
+	pl->priority = 0;
 	
 	pl->vis = 1;
 	
@@ -534,7 +534,7 @@ void player_draw(player *pl)
 	{
 		VDP_setSpriteDirect(pl->sprite_num,
 			(pl->x >> PLAYER_RESOLUTION) + PLAYER_X1 - 9 + (16 - (4*PLAYER_TILE_WIDTH)),
-			(pl->y >> PLAYER_RESOLUTION) - ((8*PLAYER_TILE_HEIGHT) - PLAYER_Y2),
+			(pl->y >> PLAYER_RESOLUTION) - ((8*PLAYER_TILE_HEIGHT) - PLAYER_Y2) + 1,
 			SPRITE_SIZE(PLAYER_TILE_WIDTH,PLAYER_TILE_HEIGHT),
 			TILE_ATTR_FULL(pl->palette,pl->priority,0,pl->direction,(pl->tile_index / 32)+(PLAYER_TILE_WIDTH * PLAYER_TILE_HEIGHT * pl->player_num)),
 			pl->sprite_num +1);
