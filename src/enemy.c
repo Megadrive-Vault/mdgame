@@ -1,5 +1,4 @@
-#include "enemy.h"
-#include "player.h"
+#include "includes.h"
 #include "curves.h"
 
 //typedef struct point { u16 x; u16 y; } point;
@@ -61,9 +60,9 @@ void enemy_update(enemy *e)
 			e->curve = curve_b;
 			e->curve_len = curve_b_len;
 		}
-		if(e->x > 600) {
+		if(e->x > (320 << PLAYER_RESOLUTION)) {
 			e->direction = 1;
-		} else if (e->x < -50) {
+		} else if (e->x < -40) {
 			e->direction = 0;
 		}
 	} else {

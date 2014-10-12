@@ -43,7 +43,7 @@ RES_RC+= $(wildcard $(RES)/*.rc)
 RES_RES= $(wildcard *.res)
 RES_RES+= $(wildcard $(RES)/*.res)
 
-OBJ= $(RES_RES:.res=.o)
+OBJ= $(RES_RES:.res=_res.o)
 OBJ+= $(RES_RC:.rc=.o)
 OBJ+= $(RES_S:.s=.o)
 OBJ+= $(RES_C:.c=.o)
@@ -61,10 +61,10 @@ FLAGSZ80= -i$(SRC) -i$(INCLUDE) -i$(RES) -i$(LIBSRC) -i$(LIBINCLUDE)
 
 #release: FLAGS= $(DEFAULT_FLAGS) -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fomit-frame-pointer
 release: FLAGS= $(DEFAULT_FLAGS) -O1 -fomit-frame-pointer
-release: curves out/rom.bin
+release: out/rom.bin
 
 debug: FLAGS= $(DEFAULT_FLAGS) -O1 -ggdb -DDEBUG=1
-debug: curves out/rom.bin out/rom.out out/symbol.txt
+debug: out/rom.bin out/rom.out out/symbol.txt
 
 
 all: release
@@ -117,7 +117,7 @@ out/%.o: %.s
 	$(MKDIR) -p out/res
 	$(CC) $(FLAGS) -c $< -o $@
 
-%.s: %.res
+%_res.s: %.res
 	$(RESCOMP) $< $@
 
 %.asm: %.rc

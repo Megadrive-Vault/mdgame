@@ -1,10 +1,10 @@
-#include "gamedata.h"
+#include "includes.h"
 
 u8 map_collision(u16 x, u16 y)
 {
 	x = (x >> 3);
 	y = (y >> 3);
-	return map[y][x];
+	return collision_map[y][x];
 }
 
 // For now, use the SGDK text function to render a "level"...
@@ -14,7 +14,7 @@ void ghetto_map_render()
 	{
 		for (u8 x = 0; x < 40; x++)
 		{
-			if (map[y][x] == MAP_SOLID)
+			if (collision_map[y][x] == MAP_SOLID)
 			{
 				VDP_drawText("#",x,y);
 			}
@@ -22,7 +22,7 @@ void ghetto_map_render()
 	}
 }
 
-
+const u16 abc[] = { 0x0002 << 1 };
 
 void bg_dma_tiles(void)
 {
@@ -51,25 +51,3 @@ void bg_dma_tiles(void)
 	VDP_doVRamDMA(src,BG_BASE_VRAM_INDEX,size);
 }
 
-void plot_map(void)
-{
-	VDP_clearPlan(VDP_PLAN_A,1);
-	VDP_clearPlan(VDP_PLAN_B,1);
-	
-	for (u8 y = 0; y < 28; y++)
-	{
-		for (u8 x = 0; x < 40; x++)
-		{
-			VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(fgmap[y][x]>>7,1,0,0,(BG_BASE_VRAM_INDEX/32) + (fgmap[y][x] & 0x7F)),x,y);
-			VDP_setTileMapXY(VDP_PLAN_B,TILE_ATTR_FULL(bgmap[y][x]>>7,0,0,0,(BG_BASE_VRAM_INDEX/32) + (bgmap[y][x] & 0x7F)),x,y);
-		}
-	}
-}
-
-
-void load_maps(void)
-{
-	memcpy(&map, &default_map, sizeof(u8[32][40]));
-	memcpy(&fgmap, &map_foreground, sizeof(u8[32][40]));
-	memcpy(&bgmap, &map_background, sizeof(u8[32][40]));
-}

@@ -1,4 +1,5 @@
-#include "mpad.h"
+#include "includes.h"
+
 // Read from a Sega Mega Drive controller port.
 // Returns a bitfield - SCBARLDU (EX: bit0, LSB, is 0 when "up" is held);
 unsigned char pad_read(unsigned char pl)

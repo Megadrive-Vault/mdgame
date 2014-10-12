@@ -1,4 +1,4 @@
-#include "mpsg.h"
+#include "includes.h"
 
 void psg_vol(unsigned char chan, unsigned char vol)
 {

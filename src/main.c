@@ -1,29 +1,61 @@
-#include <genesis.h>
-#include "mpsg.h"
-#include "mpad.h"
-#include "gamedata.h"
-#include "player.h"
-#include "globals.h"
-#include "echo.h"
-#include "enemy.h"
+#include "includes.h"
 
-// Resources
-#include "music.h"
-#include "instrument.h"
-#include "map.h"
+// Static function prototypes //
+static void intro(void);
+static void title_screen(void);
+static void menu(void);
+static void game(void);
+static void scoreboard(void);
 
-const void* const instrument_table[] =
+// Static variables //
+static game_map_set default_map_set =
 {
-	instrument__chord,
-	instrument__bass,
-	instrument__lead,
+	&default_collision_map,
+	&default_foreground_map,
+	&default_background_map
+};
+
+const u8 const *default_instrument_set[] =
+{
+	(u8*)instrument_chord,
+	(u8*)instrument_bass,
+	(u8*)instrument_lead,
 	0
 };
 
-
-void gameloop(void)
+static void init()
 {
-	load_maps();
+	// Initialize the VDP: reset registers, clear VRAM, set default palettes.
+	VDP_init();
+	
+	// Initialize the sound engine
+	echo_init(default_instrument_set);
+	echo_play_bgm(&music__bgm); // TODO: Possibly adjust this convention just like instrument.
+}
+
+static void intro(void)
+{
+	// TODO: Create intro.
+	title_screen();
+}
+
+static void title_screen(void)
+{
+	// TODO: Create title screen.
+	menu();
+}
+
+static void menu(void)
+{
+	
+	// TODO: Create menu. 
+	game();
+}
+
+static void game(void)
+{
+	// TODO: Clean up game function.
+	map_init(&default_map_set);
 	
 	player_init(&p1);
 	player_init(&p2);
@@ -34,13 +66,9 @@ void gameloop(void)
 	p2.other = &p1;
 	p2.sprite_num = 1;
 	p2.player_num = 1;
-	plot_map();
 	p2.x = 512;
 	
 	int i = 0;
-	// Initialize the sound engine
-	echo_init(instrument_table);
-	echo_play_bgm(&music__bgm);
 
 	enemy e;
 	enemy_spawn(&e);
@@ -81,14 +109,18 @@ void gameloop(void)
 	}
 }
 
+static void scoreboard(void)
+{
+	// TODO: Create score board.
+}
+
+// Suggested states: intro, title, menu, game, scoreboard
+
 int main(void)
 {
-	VDP_init();
-	gameloop();
-
-	while(1)
-	{
-		VDP_waitVSync();
-	}
-	return (0);	
+	// Generic initialization
+	init();
+	// Start at the intro.
+	intro();
+	return 0;
 }

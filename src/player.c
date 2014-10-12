@@ -1,4 +1,4 @@
-#include "player.h"
+#include "includes.h"
 
 void player_dma_tiles(player *pl)
 {
@@ -642,6 +642,7 @@ void player_dash_vectors(player *pl)
 	}
 	else
 	{
+		pl->dx = (pl->direction) ? (PLAYER_DASH_THRUST_X * -1) : PLAYER_DASH_THRUST_X;
 		pl->dy = 0;
 	}
 }
