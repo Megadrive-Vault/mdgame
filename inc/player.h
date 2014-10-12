@@ -94,10 +94,11 @@ struct player
 	u16 normal_pal2[16]; // P2
 	u16 light_pal1[16];
 	u16 light_pal2[16];
-	u16 white_pal[16];
 	u8 hitstun; // Player is knocked around whiel hurt, can't press buttons
 	u8 flash; // Invincibility after damage?
 	u8 hitfreeze; 
+	
+	u8 button_count; // Used for randomization
 	
 	
 	u8 current_anim;
@@ -157,6 +158,7 @@ void player_animate(player *pl);
 void player_collide(player *pl);
 
 // Support functions for the above
+void hit_other_player(player *pl);
 void player_counters(player *pl);
 void player_calc_animation(player *pl);
 void player_dash_vectors(player *pl);

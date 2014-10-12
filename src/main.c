@@ -74,6 +74,7 @@ const u8 const *default_instrument_set[] =
 	(u8*)instrument_chord,
 	(u8*)instrument_bass,
 	(u8*)instrument_lead,
+	(u8*)instrument_bell,
 	0
 };
 
@@ -82,22 +83,16 @@ static void init()
 	state = 0;
 	// Initialize the VDP: reset registers, clear VRAM, set default palettes.
 	VDP_init();
-	
-	// Initialize the sound engine
-	echo_init(default_instrument_set);
-	echo_play_bgm(&music__bgm); // TODO: Possibly adjust this convention just like instrument.
 }
 
 static void intro(void)
 {
 	// TODO: Create intro.
-	return title_screen();
 }
 
 static void title_screen(void)
 {
 	// TODO: Create title screen.
-	return menu();
 }
 
 static u8 menu(void)
@@ -105,11 +100,11 @@ static u8 menu(void)
 	return 1;
 }
 
-
-
 static void game(void)
 {
 	// TODO: Clean up game function.
+	VDP_clearPlan(VDP_PLAN_A,0);
+	VDP_clearPlan(VDP_PLAN_B,0);
 	map_init(&default_map_set);
 
 	player_init(&p1);
@@ -129,15 +124,31 @@ static void game(void)
 	u16 timer = 60 * 120;
 
 	enemy_t e;
-	enemy_spawn(&e);
+	e.state = 0;
 
 	player *player_a = &p1;
 	player *player_b = &p2;
 
+	
 	bg_dma_tiles();
 	timer = 0;
-	while (timer < (60 * 60 * 1))
+	u16 spawn_cnt = 0;
+	
+	// Initialize the sound engine
+	echo_init(default_instrument_set);
+	echo_play_bgm(&music__bgm); // TODO: Possibly adjust this convention just like instrument.
+	
+	while (timer < (60 * 60 * 2))
 	{
+		spawn_cnt++;
+		if (spawn_cnt == ENEMY_SPAWN_TIME)
+		{
+			if ( e.state != 1 && e.state != 2)
+			{
+				enemy_spawn(&e, 2, (player_a->button_count + player_b->button_count));
+			}
+			spawn_cnt = 0;
+		}
 		player_a = (i & 0x01) ? &p1 : &p2;
 		player_b = (i & 0x01) ? &p2 : &p1;
 		p1.sprite_num = i % 2;
@@ -151,6 +162,8 @@ static void game(void)
 		player_collide(player_b);
 		player_slap(player_a);
 		player_slap(player_b);
+		enemy_check_players(&e, player_a);
+		enemy_check_players(&e, player_b);
 		player_animate(player_a);
 		player_animate(player_b);
 		VDP_waitVSync();
@@ -166,9 +179,9 @@ static void game(void)
 		// Enemy update section
 	}
 	
+	e.x = -128;
+	enemy_draw(&e);
 	timer = 0;
-	
-	void echo_stop_bgm(void);
 	
 	VDP_clearPlan(VDP_PLAN_A,0);
 	VDP_clearPlan(VDP_PLAN_B,0);
@@ -200,12 +213,12 @@ static void game(void)
 	u8 pads[2];
 	pads[0] = 0xFF;
 	pads[1] = 0xFF;
+	echo_stop_bgm();
 	while ((pads[0] & KEY_START) && (pads[1] & KEY_START))
 	{
 		pads[0] = pad_read(0);
 		pads[1] = pad_read(1);
 	}
-	void echo_stop_bgm(void);
 	
 	// The game is over
 }
