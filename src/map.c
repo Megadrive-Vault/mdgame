@@ -26,8 +26,8 @@ static void map_load_default(game_map_set *map)
 
 static void map_plot(void)
 {
-	VDP_clearPlan(VDP_PLAN_A,1);
-	VDP_clearPlan(VDP_PLAN_B,1);
+	VDP_clearPlan(VDP_PLAN_A,0);
+	VDP_clearPlan(VDP_PLAN_B,0);
 	
 	for (u8 y = 0; y < 28; y++)
 	{
