@@ -2,7 +2,7 @@
 # FROM DAT OERG866 YEYEYE
 FILE "C:\Users\Moffitt\Desktop\shoujoutachi.xm"
 TYPE BGM LOOP
-TEMPO 7
+TEMPO 11
 PSG 0
 NOISE 0
 FM 5
