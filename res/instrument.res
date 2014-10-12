@@ -1,4 +1,3 @@
-BIN instrument__square "instrument/square.eif"
-BIN instrument__saw    "instrument/saw.eif"
-BIN instrument__piano  "instrument/piano.eif"
-BIN instrument__neat  "instrument/neat.eif"
+BIN instrument__chord "instrument/beow.eif"
+BIN instrument__bass  "instrument/harshbass.eif"
+BIN instrument__lead  "instrument/nastylead.eif"

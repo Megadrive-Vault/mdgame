@@ -12,21 +12,18 @@
 #include "instrument.h"
 #include "map.h"
 
-
-
 const void* const instrument_table[] =
 {
-	instrument__neat,
-	instrument__saw,
-	instrument__neat,
+	instrument__chord,
+	instrument__bass,
+	instrument__lead,
 	0
 };
 
 
-
 void gameloop(void)
 {
-	memcpy(&map, &default_map, sizeof(u8[32][40]));
+	load_maps();
 	
 	player_init(&p1);
 	player_init(&p2);
@@ -37,13 +34,13 @@ void gameloop(void)
 	p2.other = &p1;
 	p2.sprite_num = 1;
 	p2.player_num = 1;
-	ghetto_map_render();
+	plot_map();
 	p2.x = 512;
 	
 	int i = 0;
 	// Initialize the sound engine
 	echo_init(instrument_table);
-	echo_play_bgm(&music__example_track);
+	echo_play_bgm(&music__bgm);
 
 	enemy e;
 	enemy_spawn(&e);
@@ -51,8 +48,10 @@ void gameloop(void)
 	player *player_a = &p1;
 	player *player_b = &p2;
 	
+	
 	while (1)
 	{
+		bg_dma_tiles();
 		i++;
 		player_a = (i & 0x01) ? &p1 : &p2;
 		player_b = (i & 0x01) ? &p2 : &p1;
