@@ -24,6 +24,7 @@ const void* const instrument_table[] =
 void gameloop(void)
 {
 	load_maps();
+	plot_map();
 	
 	player_init(&p1);
 	player_init(&p2);
@@ -34,7 +35,6 @@ void gameloop(void)
 	p2.other = &p1;
 	p2.sprite_num = 1;
 	p2.player_num = 1;
-	plot_map();
 	p2.x = 512;
 	
 	int i = 0;
@@ -48,10 +48,10 @@ void gameloop(void)
 	player *player_a = &p1;
 	player *player_b = &p2;
 	
-	
+	bg_dma_tiles();
+	load_font(VDP_PLAN_B,0);
 	while (1)
 	{
-		bg_dma_tiles();
 		i++;
 		player_a = (i & 0x01) ? &p1 : &p2;
 		player_b = (i & 0x01) ? &p2 : &p1;

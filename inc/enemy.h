@@ -8,7 +8,7 @@
 #include "globals.h"
 #include "bezier.h"
 
-#include "enemy_sprites.h"
+#include "gfx.h"
 
 #define ENEMY_TILE_WIDTH 2
 #define ENEMY_TILE_HEIGHT 2
