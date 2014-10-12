@@ -2,8 +2,8 @@
 
 u8 map_collision(u16 x, u16 y)
 {
-	x = (x >> 3);
-	y = (y >> 3);
+	x = (x >> 3) % 40;
+	y = (y >> 3) % 28;
 	return collision_map[y][x];
 }
 

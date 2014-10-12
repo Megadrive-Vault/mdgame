@@ -3,10 +3,11 @@
 #include "includes.h"
 
 // Types and structs //
-typedef struct point_diff
+typedef struct point_diff point_diff;
+struct point_diff
 {
 	int8_t x;
 	int8_t y;
-} point_diff;
+};
 
 #endif

@@ -33,7 +33,7 @@ static void map_plot(void)
 	{
 		for (u8 x = 0; x < 40; x++)
 		{
-			VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(foreground_map[y][x]>>7,1,0,0,(BG_BASE_VRAM_INDEX/32) + (foreground_map[y][x] & 0x7F)),x,y);
+			VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(foreground_map[y][x]>>7,1,0,0,(FG_BASE_VRAM_INDEX/32) + (foreground_map[y][x] & 0x7F)),x,y);
 			VDP_setTileMapXY(VDP_PLAN_B,TILE_ATTR_FULL(background_map[y][x]>>7,0,0,0,(BG_BASE_VRAM_INDEX/32) + (background_map[y][x] & 0x7F)),x,y);
 		}
 	}
