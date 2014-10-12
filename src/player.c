@@ -296,7 +296,7 @@ void player_take_inputs(player *pl, u8 pad_data)
 	}
 	
 	// Jump negative edge detection
-	if (!(pad_data & KEY_B))
+	if (!(pad_data & PLAYER_KEY_JUMP))
 	{
 		if (pl->jump_key == 0)
 		{	
@@ -461,6 +461,10 @@ void player_move(player *pl)
 			pl->dx = pl->dx * -1;
 		}
 	}
+	if (pl->x > 320 << PLAYER_RESOLUTION)
+	{
+		pl->x -= 320 << PLAYER_RESOLUTION;
+	}
 	
 	coltype = player_neg_dx(pl);
 	if (coltype == MAP_SOLID)
@@ -473,6 +477,10 @@ void player_move(player *pl)
 		{
 			pl->dx = pl->dx * -1;
 		}
+	}
+	if (pl->x > 320 << PLAYER_RESOLUTION) // Unsigned rollover
+	{
+		pl->x += 320 << PLAYER_RESOLUTION;
 	}
 	
 	coltype = player_pos_dy(pl);
@@ -642,6 +650,7 @@ void player_dash_vectors(player *pl)
 	}
 	else
 	{
+		pl->dx = (pl->direction) ? (PLAYER_DASH_THRUST_X * -1) : PLAYER_DASH_THRUST_X;
 		pl->dy = 0;
 	}
 }
@@ -722,7 +731,7 @@ void player_dash(player *pl)
 {
 	
 	// Dash inputs
-	if (!(pl->pad_data & KEY_C))
+	if (!(pl->pad_data & PLAYER_KEY_DASH))
 	{
 		if (pl->dashcooldown == 0 && pl->dashok && pl->hitstun == 0)
 		{
@@ -735,7 +744,7 @@ void player_dash(player *pl)
 		pl->dashok = 0;
 		pl->dashcooldown--;
 	}
-	if (pl->grounded && (pl->pad_data & KEY_C))
+	if (pl->grounded && (pl->pad_data & PLAYER_KEY_DASH))
 	{
 		pl->dashok = 1;
 	}
@@ -754,12 +763,12 @@ void player_slap(player *pl)
 	// No slapping is occurring
 	if (pl->slapcooldown == 0 && pl->slapcnt == 0)
 	{
-		if (!(pl->pad_data & KEY_A) && pl->slapok)
+		if (!(pl->pad_data & PLAYER_KEY_SLAP) && pl->slapok)
 		{
 			pl->slapcnt = PLAYER_SLAPTIME;
 			pl->slapok = 0;
 		}
-		else if ((pl->pad_data & KEY_A))
+		else if ((pl->pad_data & PLAYER_KEY_SLAP))
 		{
 			pl->slapok = 1;
 		}
@@ -792,9 +801,7 @@ u8 player_pos_dy(player *pl)
 		{
 			u16 checkx1 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X1;
 			u16 checkx2 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2;
-			check_bounds(&checkx2,320);
 			u16 checkx3 = (pl->x >> PLAYER_RESOLUTION);
-			check_bounds(&checkx3,320);
 			u16 checky = (pl->y >>  PLAYER_RESOLUTION) + PLAYER_Y2 + 1;
 			coltype = map_collision(checkx1, checky);
 			if (coltype) { break; };
@@ -818,11 +825,10 @@ u8 player_neg_dy(player *pl)
 		// Increment step by step, checking for a collision
 		for (int l = pl->dy * -1; l != 0; l--)
 		{
+
 			u16 checkx1 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X1;
-			check_bounds(&checkx1,320);
 			u16 checkx2 = (pl->x >> PLAYER_RESOLUTION) + PLAYER_X2;
 			u16 checkx3 = (pl->x >> PLAYER_RESOLUTION);
-			check_bounds(&checkx3,320);
 			u16 checky = (pl->y >>  PLAYER_RESOLUTION) + PLAYER_Y1 - 1;
 			coltype = map_collision(checkx1, checky);
 			if (coltype) { break; };
@@ -849,7 +855,7 @@ u8 player_pos_dx(player *pl)
 		// Increment step by step, checking for a collision
 		for (int l = pl->dx; l != 0; l--)
 		{
-			u16 checkx = ((pl->x >> PLAYER_RESOLUTION) + PLAYER_X2 + 1) % 320;
+			u16 checkx = ((pl->x >> PLAYER_RESOLUTION) + PLAYER_X2 + 1);
 			u16 checky1 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y1;
 			u16 checky2 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2;
 			u16 checky3 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y3;
@@ -859,10 +865,6 @@ u8 player_pos_dx(player *pl)
 			if (coltype) { break; };
 			coltype = map_collision(checkx, checky3);
 			if (coltype) { break; };
-			if (pl->x == (320 << PLAYER_RESOLUTION) - 1)
-			{
-				pl->x = -1;
-			}
 			pl->x = pl->x + 1;
 		}
 	}
@@ -880,10 +882,6 @@ u8 player_neg_dx(player *pl)
 		for (int l = pl->dx * -1; l != 0; l--)
 		{
 			u16 checkx = ((pl->x >>  PLAYER_RESOLUTION) + PLAYER_X1 - 1);
-			if (checkx > 320) // Trust me on this one, it'll fix the left.
-			{
-				checkx += 320;
-			}
 			u16 checky1 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y1;
 			u16 checky2 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y2;
 			u16 checky3 = (pl->y >> PLAYER_RESOLUTION) + PLAYER_Y3;
@@ -893,10 +891,6 @@ u8 player_neg_dx(player *pl)
 			if (coltype) { break; };
 			coltype = map_collision(checkx, checky3);
 			if (coltype) { break; };
-			if (pl->x == 0)
-			{
-				pl->x = (320 << PLAYER_RESOLUTION) - 1;
-			}
 			pl->x = pl->x - 1;
 		}
 	}

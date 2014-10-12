@@ -1,6 +1,6 @@
 #ifndef MPAD_H
 #define MPAD_H
-#include <genesis.h>
+#include "includes.h"
 // Megadrive Pad reading routine
 
 #define PLAYER_1 0

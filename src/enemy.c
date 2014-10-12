@@ -1,12 +1,11 @@
 #include "enemy.h"
-#include "player.h"
 #include "curves.h"
 
 //typedef struct point { u16 x; u16 y; } point;
 
 static _direction = 1;
 
-void enemy_spawn(enemy *e)
+void enemy_spawn(enemy_t *e)
 {
 	// TODO: Implement some pseudo-random initial (x, y) selector
 	e->x = 150;
@@ -24,7 +23,7 @@ void enemy_spawn(enemy *e)
 	e->curve_len = curve_a_len;
 }
 
-void enemy_update(enemy *e)
+void enemy_update(enemy_t *e)
 {
 	u16 x_offset = e->curve[e->phase].x;
 	u16 y_offset = e->curve[e->phase].y;
@@ -61,9 +60,9 @@ void enemy_update(enemy *e)
 			e->curve = curve_b;
 			e->curve_len = curve_b_len;
 		}
-		if(e->x > 600) {
+		if(e->x > (320 << PLAYER_RESOLUTION)) {
 			e->direction = 1;
-		} else if (e->x < -50) {
+		} else if (e->x < -40) {
 			e->direction = 0;
 		}
 	} else {
@@ -72,7 +71,7 @@ void enemy_update(enemy *e)
 	};
 }
 
-void enemy_dma_tiles(enemy *e)
+void enemy_dma_tiles(enemy_t *e)
 {
 	// Load the player tiles
 	u8 num_tiles = ENEMY_TILE_WIDTH * ENEMY_TILE_HEIGHT;
@@ -81,7 +80,7 @@ void enemy_dma_tiles(enemy *e)
 	VDP_doVRamDMA(src,ENEMY_BASE_VRAM_INDEX + (2 * size * e->enemy_num),size);
 }
 
-void enemy_draw(enemy *e)
+void enemy_draw(enemy_t *e)
 {
 	int tile_addr = (ENEMY_BASE_VRAM_INDEX / 32)+((ENEMY_TILE_WIDTH * ENEMY_TILE_HEIGHT) * e->enemy_num);
 	VDP_setSpriteDirect(e->sprite_num,

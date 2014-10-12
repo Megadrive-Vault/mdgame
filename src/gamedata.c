@@ -2,41 +2,49 @@
 
 u8 map_collision(u16 x, u16 y)
 {
-	x = (x >> 3);
-	y = (y >> 3);
-	return map[y][x];
+	x = (x >> 3) % 40;
+	y = (y >> 3) % 28;
+	return collision_map[y][x];
 }
 
 // For now, use the SGDK text function to render a "level"...
-void ghetto_map_render()
+
+// Yah load das plahn
+void load_font(u16 plan, u8 pal)
 {
-	for (u8 y = 0; y < 28; y++)
+	if (plan != VDP_PLAN_A && plan != VDP_PLAN_B)
 	{
-		for (u8 x = 0; x < 40; x++)
-		{
-			if (map[y][x] == MAP_SOLID)
-			{
-				VDP_drawText("#",x,y);
-			}
-		}
+		return;
 	}
+	
+	// Font palette
+	u16 fpal[] = {
+		0x0000, 0x0240, 0x0282, 0x02E4,
+		0x0204, 0x0468, 0x06AE, 0x0EEE,
+		0x0600, 0x0A20, 0x0C60, 0x0EC2,
+		0x0004, 0x004A, 0x028E, 0x0000
+	};
+	VDP_doCRamDMA(fpal,pal << 5,16);
+	
+	// Tile datum
+	u8 num_tiles = 0x7F; // 128 characters in ASCII
+	u16 size = (16 * num_tiles);
+	VDP_doVRamDMA(font_tiles,(plan == VDP_PLAN_A ? FG_BASE_VRAM_INDEX : BG_BASE_VRAM_INDEX),size);
 }
-
-
 
 void bg_dma_tiles(void)
 {
 
 	u16 pal1[] = {
-		0x0000, 0x0240, 0x0282, 0x02E4,
-		0x0248, 0x026A, 0x048C, 0x0EEE,
-		0x0200, 0x0620, 0x0A60, 0x0EC2,
-		0x0002, 0x0048, 0x02AE, 0x0000
+		0x00C8, 0x0020, 0x0040, 0x0060,
+		0x0204, 0x0468, 0x06AE, 0x0EEE,
+		0x0600, 0x0A20, 0x0C60, 0x0EC2,
+		0x0004, 0x004A, 0x028E, 0x0000
 	};
 	
 	u16 pal2[] = {
-		0x0ECE, 0x04E0, 0x0240, 0x0882,
-		0x0ECE, 0x04EE, 0x024C, 0x088E,
+		0x02C8, 0x0260, 0x0280, 0x02A0,
+		0x02C0, 0x0264, 0x02A6, 0x02CA,
 		0x0ECE, 0x04E0, 0x024E, 0x088E,
 		0x0ECE, 0x04E0, 0x024E, 0x088E
 	};
@@ -49,27 +57,8 @@ void bg_dma_tiles(void)
 	u16 size = (16 * num_tiles);
 	u16 *src = bg_tiles;
 	VDP_doVRamDMA(src,BG_BASE_VRAM_INDEX,size);
-}
-
-void plot_map(void)
-{
-	VDP_clearPlan(VDP_PLAN_A,1);
-	VDP_clearPlan(VDP_PLAN_B,1);
-	
-	for (u8 y = 0; y < 28; y++)
-	{
-		for (u8 x = 0; x < 40; x++)
-		{
-			VDP_setTileMapXY(VDP_PLAN_A,TILE_ATTR_FULL(fgmap[y][x]>>7,1,0,0,(BG_BASE_VRAM_INDEX/32) + (fgmap[y][x] & 0x7F)),x,y);
-			VDP_setTileMapXY(VDP_PLAN_B,TILE_ATTR_FULL(bgmap[y][x]>>7,0,0,0,(BG_BASE_VRAM_INDEX/32) + (bgmap[y][x] & 0x7F)),x,y);
-		}
-	}
-}
-
-
-void load_maps(void)
-{
-	memcpy(&map, &default_map, sizeof(u8[32][40]));
-	memcpy(&fgmap, &map_foreground, sizeof(u8[32][40]));
-	memcpy(&bgmap, &map_background, sizeof(u8[32][40]));
+	num_tiles = FG_NUM_TILES;
+	size = (16 * num_tiles);
+	src = fg_tiles;
+	VDP_doVRamDMA(src,FG_BASE_VRAM_INDEX,size);
 }
