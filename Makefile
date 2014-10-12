@@ -1,137 +1,181 @@
-BIN= $(GDK)/bin
-LIB= $(GDK)/lib
+CC = m68k-elf-gcc
+AS = m68k-elf-as
+OBJC = m68k-elf-objcopy
+LD = m68k-elf-ld
+RM = rm -f
+ASMZ80 = zasm
+BINTOS = bintos
+PCMTORAW = pcmtoraw
+WAVTORAW = wavtoraw
+NM = nm
+NM2WCH = nm2wch
+SIZEBND = sizebnd
+MKISOFS = mkisofs
+RESCOMP= rescomp
 
-LIBSRC= $(GDK)/src
-LIBRES= $(GDK)/res
-LIBINCLUDE= $(GDK)/inc
+SCD_LOADER = scd/LukeProjectCD
 
-SRC= src
-RES= res
-INCLUDE= inc
+OPTION =
+INCS = -I. -I$(GENDEV)/m68k-elf/include -I$(GENDEV)/m68k-elf/m68k-elf/include -Isrc -Ires -Iinc
+CCFLAGS = $(OPTION) -m68000 -Wall -O2 -c -fomit-frame-pointer -std=c99
+HWCCFLAGS = $(OPTION) -m68000 -Wall -O1 -c -fomit-frame-pointer
+Z80FLAGS = -vb2
+ASFLAGS = -m68000 --register-prefix-optional
+LIBS =  -L$(GENDEV)/m68k-elf/lib -L$(GENDEV)/m68k-elf/lib/gcc/m68k-elf/4.8.2 -L$(GENDEV)/m68k-elf/m68k-elf/lib -lmd -lc -lgcc -lnosys -lm 
+#LIBS =  -L$(GENDEV)/m68k-elf/lib -L$(GENDEV)/m68k-elf/lib/gcc/m68k-elf/4.8.2 -L$(GENDEV)/m68k-elf/m68k-elf/lib -lmd -lnosys 
+LINKFLAGS = -T $(GENDEV)/ldscripts/sgdk.ld -nostdlib 
+SCDLINKFLAGS = -T scd/mdcd.ld -nostdlib 
+ARCHIVES = $(GENDEV)/m68k-elf/lib/libmd.a $(GENDEV)/m68k-elf/lib/gcc/m68k-elf/4.8.2/libgcc.a 
 
-SHELL= $(BIN)/sh
-RM= $(BIN)/rm
-CP= $(BIN)/cp
-AR= $(BIN)/ar
-CC= $(BIN)/gcc
-LD= $(BIN)/ld
-NM= $(BIN)/nm
-ECHO= echo
-OBJCPY= $(BIN)/objcopy
-ASMZ80= $(BIN)/sjasm
-MACCER= $(BIN)/mac68k
-SIZEBND= $(BIN)/sizebnd
-BINTOS= $(BIN)/bintos
-GENRES= $(BIN)/genres
-RESCOMP= $(BIN)/rescomp
-MKDIR= $(BIN)/mkdir
+RESOURCES=
+BOOT_RESOURCES=
 
-SRC_C= $(wildcard *.c)
-SRC_C+= $(wildcard $(SRC)/*.c)
-SRC_S= $(wildcard *.s)
-SRC_S+= $(wildcard $(SRC)/*.s)
-SRC_ASM= $(wildcard *.asm)
-SRC_ASM+= $(wildcard $(SRC)/*.asm)
-SRC_S80= $(wildcard *.s80)
-SRC_S80+= $(wildcard $(SRC)/*.s80)
+BOOTSS=$(wildcard boot/*.s)
+BOOTSS+=$(wildcard src/boot/*.s)
+BOOT_RESOURCES+=$(BOOTSS:.s=.o)
 
-RES_C= $(wildcard $(RES)/*.c)
-RES_S= $(wildcard $(RES)/*.s)
-RES_RC= $(wildcard *.rc)
-RES_BEZ= $(wildcard $(RES)/*.bez)
-RES_RC+= $(wildcard $(RES)/*.rc)
-RES_RES= $(wildcard *.res)
-RES_RES+= $(wildcard $(RES)/*.res)
+SCDBOOTSS=$(wildcard scd/*.s)
+SCDBOOTSS+=$(wildcard src/scd/*.s)
+SCDBOOT_RESOURCES=$(SCDBOOTSS:.s=.o)
 
-OBJ= $(RES_RES:.res=_res.o)
-OBJ+= $(RES_RC:.rc=.o)
-OBJ+= $(RES_S:.s=.o)
-OBJ+= $(RES_C:.c=.o)
-OBJ+= $(SRC_S80:.s80=.o)
-OBJ+= $(SRC_ASM:.asm=.o)
-OBJ+= $(SRC_S:.s=.o)
-OBJ+= $(SRC_C:.c=.o)
+#BMPS=$(wildcard res/*.bmp)
+#VGMS=$(wildcard res/*.vgm)
+#RAWS=$(wildcard res/*.raw)
+#PCMS=$(wildcard res/*.pcm)
+#MVSS=$(wildcard res/*.mvs)
+#TFDS=$(wildcard res/*.tfd)
+#WAVS=$(wildcard res/*.wav)
+RESS=$(wildcard res/*.res)
+#WAVPCMS=$(wildcard res/*.wavpcm)
+#BMPS+=$(wildcard *.bmp)
+#VGMS+=$(wildcard *.vgm)
+#RAWS+=$(wildcard *.raw)
+#PCMS+=$(wildcard *.pcm)
+#MVSS+=$(wildcard *.mvs)
+#TFDS+=$(wildcard *.tfd)
+#WAVS+=$(wildcard *.wav)
+RESS+=$(wildcard *.res)
+#WAVPCMS+=$(wildcard *.wavpcm)
 
-OBJS = $(addprefix out/, $(OBJ))
+#RESOURCES+=$(BMPS:.bmp=.o)
+#RESOURCES+=$(VGMS:.vgm=.o)
+#RESOURCES+=$(RAWS:.raw=.o)
+#RESOURCES+=$(PCMS:.pcm=.o)
+#RESOURCES+=$(MVSS:.mvs=.o)
+#RESOURCES+=$(TFDS:.tfd=.o)
+#RESOURCES+=$(WAVS:.wav=.o)
+#RESOURCES+=$(WAVPCMS:.wavpcm=.o)
+RESOURCES+=$(RESS:.res=.o)
 
-INCS= -I$(INCLUDE) -I$(SRC) -I$(RES) -I$(LIBINCLUDE) -I$(LIBRES)
-DEFAULT_FLAGS= -m68000 -Wall -fno-builtin $(INCS) -B$(BIN) -std=c99
-FLAGSZ80= -i$(SRC) -i$(INCLUDE) -i$(RES) -i$(LIBSRC) -i$(LIBINCLUDE)
+CS=$(wildcard src/*.c)
+SS=$(wildcard src/*.s)
+S80S=$(wildcard src/*.s80)
+CS+=$(wildcard *.c)
+SS+=$(wildcard *.s)
+S80S+=$(wildcard *.s80)
+RESOURCES+=$(CS:.c=.o)
+RESOURCES+=$(SS:.s=.o)
+RESOURCES+=$(S80S:.s80=.o)
 
+OBJS = $(RESOURCES)
 
-#release: FLAGS= $(DEFAULT_FLAGS) -O3 -fno-web -fno-gcse -fno-unit-at-a-time -fomit-frame-pointer
-release: FLAGS= $(DEFAULT_FLAGS) -O1 -fomit-frame-pointer
-release: out/rom.bin
+all: out.bin 
 
-debug: FLAGS= $(DEFAULT_FLAGS) -O1 -ggdb -DDEBUG=1
-debug: out/rom.bin out/rom.out out/symbol.txt
+boot/sega.o: boot/rom_head.bin
+	$(AS) $(ASFLAGS) boot/sega.s -o $@
 
-
-all: release
-default: release
-
-.PHONY: clean
-
-
-clean:
-	$(RM) -f $(OBJS) out.lst out/cmd_ out/sega.o out/rom_head.bin out/rom_head.o out/rom.nm out/rom.wch out/rom.out out/rom.bin
-
-cleanobj:
-	$(RM) -f $(OBJS) out/sega.o out/rom_head.bin out/rom_head.o out/rom.out
-
-out/rom.bin: out/rom.out
-	$(OBJCPY) -O binary out/rom.out out/rom.bin
-	$(SIZEBND) out/rom.bin -sizealign 131072
-
-out/symbol.txt: out/rom.out
-	$(NM) out/rom.out > out/symbol.txt
-
-out/rom.out: out/sega.o out/cmd_ $(LIB)/libmd.a
-	$(CC) -B$(BIN) -n -T $(GDK)/md.ld -nostdlib out/sega.o @out/cmd_ $(LIB)/libmd.a $(LIB)/libgcc.a -o out/rom.out
-	$(RM) out/cmd_
-
-out/cmd_: $(OBJS)
-	$(ECHO) "$(OBJS)" > out/cmd_
-
-out/sega.o: $(LIBSRC)/boot/sega.s out/rom_head.bin
-	$(MKDIR) -p out
-	$(CC) $(FLAGS) -c $(LIBSRC)/boot/sega.s -o $@
-
-out/rom_head.bin: out/rom_head.o
-	$(LD) -T $(GDK)/md.ld -nostdlib --oformat binary -o $@ $<
-
-out/rom_head.o: $(LIBSRC)/boot/rom_head.c
-	$(MKDIR) -p out
-	$(CC) $(FLAGS) -c $< -o $@
+scd/segacd.o: 
+	$(AS) $(ASFLAGS) scd/segacd.s -o $@
 
 
-out/%.o: %.c
-	$(MKDIR) -p out
-	$(MKDIR) -p out/src
-	$(MKDIR) -p out/res
-	$(CC) $(FLAGS) -c $< -o $@
+out.iso: out.elf_scd
+	#
+	# Create a sega cd image.  Limited to 256K or smaller Roms
+	#
+	$(NM) -n -S -t x out.elf_scd > out.nm
+	$(OBJC) -O binary out.elf_scd out.bin
+	$(SIZEBND) out.bin -sizealign 131072   
+	$(OBJC) -O binary out.elf_scd $(SCD_LOADER)/_filesystem/M_INIT.PRG
+	$(SIZEBND) $(SCD_LOADER)/_filesystem/M_INIT.PRG -sizealign 131072    
+	$(MKISOFS) -iso-level 1 -o $(SCD_LOADER)/filesystem.img -pad $(SCD_LOADER)/_filesystem
+	tail -c +32769 $(SCD_LOADER)/filesystem.img > $(SCD_LOADER)/filesystem.bin
+	$(RM) -f $(SCD_LOADER)/filesystem.img
+	cd $(SCD_LOADER) && $(AS) $(ASFLAGS) -M -ahlsm=listing.asm  main-us-as.asm -o out.iso
+	tail -c +53 $(SCD_LOADER)/out.iso > out.iso
+	$(RM) -f $(SCD_LOADER)/filesystem.bin
 
-out/%.o: %.s
-	$(MKDIR) -p out
-	$(MKDIR) -p out/src
-	$(MKDIR) -p out/res
-	$(CC) $(FLAGS) -c $< -o $@
+%.bin: %.elf
+	$(OBJC) -O binary $< temp.bin
+	dd if=temp.bin of=$@ bs=8K conv=sync
 
-%_res.s: %.res
-	$(RESCOMP) $< $@
+%.elf: $(OBJS) $(BOOT_RESOURCES)
+	$(CC) -o $@ $(LINKFLAGS) $(BOOT_RESOURCES) $(ARCHIVES) $(OBJS) $(LIBS)
 
-%.asm: %.rc
-	$(GENRES) $< $@
-
-%.s: %.asm
-	$(MACCER) -o $@ $<
+%.elf_scd: $(OBJS) $(SCDBOOT_RESOURCES)
+	$(CC) -o $@ $(SCDLINKFLAGS) $(SCDBOOT_RESOURCES) $(ARCHIVES) $(OBJS) $(LIBS)
 
 %.o80: %.s80
-	$(ASMZ80) $(FLAGSZ80) $< $@ out.lst
+	$(ASMZ80) $(Z80FLAGS) -o $@ $<
 
-%.s: %.o80
+%.c: %.o80
 	$(BINTOS) $<
 
-curves: $(wildcard res/*.bez)
-	python util/bezier.py $< $(patsubst %.bez,%.h,$<)
+%.o: %.c
+	$(CC) $(CCFLAGS) $(INCS) -c $< -o $@
 
+%.o: %.s 
+	$(AS) $(ASFLAGS) $< -o $@
+
+%.s: %.bmp
+	bintos -bmp $<
+
+%.rawpcm: %.pcm
+	$(PCMTORAW) $< $@
+
+%.raw: %.wav
+	$(WAVTORAW) $< $@ 16000
+
+%.pcm: %.wavpcm
+	$(WAVTORAW) $< $@ 22050
+
+#%.tfc: %.tfd
+#	$(TFMCOM) $<
+
+#%.o80: %.s80
+#	$(ASMZ80) $(FLAGSZ80) $< $@ out.lst
+
+%.s: %.tfd
+	$(BINTOS) -align 32768 $<
+
+%.s: %.mvs
+	$(BINTOS) -align 256 $<
+
+%.s: %.esf
+	$(BINTOS) -align 32768 $<
+
+%.s: %.eif
+	$(BINTOS) -align 256 $<
+
+%.s: %.vgm 
+	$(BINTOS) -align 256 $<
+
+%.s: %.raw
+	$(BINTOS) -align 256 -sizealign 256 $<
+
+%.s: %.rawpcm
+	$(BINTOS) -align 128 -sizealign 128 -nullfill 136 $<
+
+%.s: %.rawpcm
+	$(BINTOS) -align 128 -sizealign 128 -nullfill 136 $<
+
+%.s: %.res
+	$(RESCOMP) $< $@
+
+boot/rom_head.bin: boot/rom_head.o
+	$(LD) $(LINKFLAGS) --oformat binary -o $@ $<
+	
+
+clean:
+	$(RM) $(RESOURCES)
+	$(RM) *.o *.bin *.elf *.elf_scd *.map *.iso
+	$(RM) boot/*.o boot/*.bin

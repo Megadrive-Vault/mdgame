@@ -11,7 +11,7 @@
 #include "gamedata.h"
 #include "map.h"
 #include "player.h"
-#include "globals.h"
+//#include "globals.h"
 #include "enemy.h"
 #include "bezier.h"
 

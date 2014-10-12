@@ -1,6 +1,7 @@
+#include "includes.h"
+
 #ifndef PLAYER_H
 #define PLAYER_H
-#include "includes.h"
 
 #define PLAYER_NUM_SPRITES 27
 
@@ -15,7 +16,6 @@
 #define PLAYER_SLAP_COOLDOWNTIME 12
 #define PLAYER_SLAP_THRESHHOLD PLAYER_SLAP_COOLDOWNTIME - 4
 #define PLAYER_DASHTIME 22
-
 
 
 // Physics "resolution"
