@@ -7,7 +7,7 @@
 #include "mpsg.h"
 #include "globals.h"
 
-#include "player_sprites.h"
+#include "gfx.h"
 
 #define PLAYER_NUM_SPRITES 27
 
@@ -26,6 +26,7 @@
 
 
 // Physics "resolution"
+#define PLAYER_RESOLUTION 	1
 #define PLAYER_RESOLUTION 	1
 // Physics constants
 #define PLAYER_MAX_DX 		4
@@ -46,6 +47,10 @@
 
 #define PLAYER_TILE_WIDTH 	4
 #define PLAYER_TILE_HEIGHT 	4
+
+#define PLAYER_KEY_JUMP KEY_C
+#define PLAYER_KEY_SLAP KEY_B
+#define PLAYER_KEY_DASH KEY_A
 
 // Animation cell offsets
 #define PLAYER_ANIM_OFF_STAND 0

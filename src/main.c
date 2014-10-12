@@ -76,10 +76,9 @@ static void game(void)
 	player *player_a = &p1;
 	player *player_b = &p2;
 	
-	
+	bg_dma_tiles();
 	while (1)
 	{
-		bg_dma_tiles();
 		i++;
 		player_a = (i & 0x01) ? &p1 : &p2;
 		player_b = (i & 0x01) ? &p2 : &p1;

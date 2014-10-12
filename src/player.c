@@ -296,7 +296,7 @@ void player_take_inputs(player *pl, u8 pad_data)
 	}
 	
 	// Jump negative edge detection
-	if (!(pad_data & KEY_B))
+	if (!(pad_data & PLAYER_KEY_JUMP))
 	{
 		if (pl->jump_key == 0)
 		{	
@@ -723,7 +723,7 @@ void player_dash(player *pl)
 {
 	
 	// Dash inputs
-	if (!(pl->pad_data & KEY_C))
+	if (!(pl->pad_data & PLAYER_KEY_DASH))
 	{
 		if (pl->dashcooldown == 0 && pl->dashok && pl->hitstun == 0)
 		{
@@ -736,7 +736,7 @@ void player_dash(player *pl)
 		pl->dashok = 0;
 		pl->dashcooldown--;
 	}
-	if (pl->grounded && (pl->pad_data & KEY_C))
+	if (pl->grounded && (pl->pad_data & PLAYER_KEY_DASH))
 	{
 		pl->dashok = 1;
 	}
@@ -755,12 +755,12 @@ void player_slap(player *pl)
 	// No slapping is occurring
 	if (pl->slapcooldown == 0 && pl->slapcnt == 0)
 	{
-		if (!(pl->pad_data & KEY_A) && pl->slapok)
+		if (!(pl->pad_data & PLAYER_KEY_SLAP) && pl->slapok)
 		{
 			pl->slapcnt = PLAYER_SLAPTIME;
 			pl->slapok = 0;
 		}
-		else if ((pl->pad_data & KEY_A))
+		else if ((pl->pad_data & PLAYER_KEY_SLAP))
 		{
 			pl->slapok = 1;
 		}
