@@ -1,6 +1,6 @@
 # Created by XM2ESFGUI
 # FROM DAT OERG866 YEYEYE
-FILE "C:\Users\Moffitt\Documents\GitHub\mdgame\res\xm\moskito.xm"
+FILE "C:\Users\Moffitt\Documents\GitHub\mdgame\res\xm\test.xm"
 TYPE BGM LOOP
 TEMPO 7
 PSG 0
@@ -9,7 +9,7 @@ FM 3
 PCM 0
 FM1 1
 FM2 2
-FM3 4
+FM3 3
 [Instruments]
 1 0
 2 0

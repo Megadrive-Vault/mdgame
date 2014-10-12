@@ -16,9 +16,9 @@
 
 const void* const instrument_table[] =
 {
-	instrument__square,
+	instrument__neat,
 	instrument__saw,
-	instrument__saw,
+	instrument__neat,
 	0
 };
 
@@ -43,7 +43,7 @@ void gameloop(void)
 	int i = 0;
 	// Initialize the sound engine
 	echo_init(instrument_table);
-	// echo_play_bgm(&music__example_track);
+	echo_play_bgm(&music__example_track);
 
 	enemy e;
 	enemy_spawn(&e);

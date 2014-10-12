@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE settings SYSTEM "settings.dtd">
+<settings>
+  <property key="locale" value="en_US"/>
+  <property key="viewStatusBar" value="true"/>
+  <property key="viewToolBar" value="true"/>
+  <property key="maxRecentFiles" value="10"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Desktop\scratchpad.gb"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx-wip\player-linear.bin"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\mdgame\res\gfx\player_sprites.bin"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Documents\GitHub\Plot384\assets\player.gb"/>
+  <property key="recentFile" value="C:\Users\Moffitt\Desktop\tm0"/>
+</settings>
