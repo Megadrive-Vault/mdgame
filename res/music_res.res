@@ -1,1 +1,0 @@
-BIN music__bgm "music/bgm.esf"

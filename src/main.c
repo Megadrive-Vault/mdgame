@@ -70,7 +70,7 @@ static void game(void)
 	
 	int i = 0;
 
-	enemy e;
+	enemy_t e;
 	enemy_spawn(&e);
 	
 	player *player_a = &p1;

@@ -11,7 +11,7 @@
 // TODO: Create enemy sprites
 // #include "enemy_sprites.h"
 
-typedef struct enemy enemy;
+typedef struct enemy enemy_t;
 struct enemy
 {
 	// point_diff *curve;
@@ -21,6 +21,7 @@ struct enemy
 	u8 direction; // 0 = Rightward, 1 = Leftward
 	u8 phase;
 	u8 flip_curve;
+	struct point_diff *curve;
 	u16 curve_len;
 
 	u8 state; // 0 = flying about, 1 = after being hit
@@ -32,9 +33,9 @@ struct enemy
 	u8 anim_frame;
 };
 
-void enemy_animate(enemy *);
-void enemy_spawn(enemy *);
-void enemy_update(enemy *);
-void enemy_draw(enemy *);
+void enemy_animate(enemy_t *);
+void enemy_spawn(enemy_t *);
+void enemy_update(enemy_t *);
+void enemy_draw(enemy_t *);
 
 #endif
