@@ -173,7 +173,7 @@ void player_animate(player *pl)
 void player_init(player *pl)
 {
 	pl->other = NULL;
-	pl->slaps = 0;
+	pl->total_slaps = 0;
 	pl->sprite_num = 0;
 	pl->palette = 0;
 	pl->tile_index = 16 * 32;
@@ -581,7 +581,7 @@ void player_collide(player *pl)
 	{
 		if (pl->slapcooldown > PLAYER_SLAP_THRESHHOLD)
 		{
-			pl->slaps++;
+			pl->total_slaps++;
 			pl->other->slapcooldown = 0;
 			pl->other->slapcnt = 0;
 			pl->other->hitfreeze = 6;

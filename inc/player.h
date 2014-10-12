@@ -87,7 +87,7 @@ struct player
 {
 	player *other;
 
-	u16 slaps; // How many slaps this player got
+	u16 total_slaps; // How many slaps this player got
 	
 	// Palettes; last 8 colors used by other sprites (enemies, etc)
 	u16 normal_pal1[16]; // P1

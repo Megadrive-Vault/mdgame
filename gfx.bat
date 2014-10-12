@@ -1,0 +1,1 @@
+util\btpose 4 4 res\gfxlin\player.bin res\gfx\player_sprites.bin
