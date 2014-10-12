@@ -1,6 +1,7 @@
+#include "includes.h"
+
 #ifndef GAMEDATA_H
 #define GAMEDATA_H
-#include "includes.h"
 
 #define MAP_EMPTY 0
 #define MAP_SOLID 1

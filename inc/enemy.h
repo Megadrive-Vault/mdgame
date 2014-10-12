@@ -1,6 +1,6 @@
+#include "includes.h"
 #ifndef ENEMY_H
 #define ENEMY_H
-#include "includes.h"
 
 #define ENEMY_TILE_WIDTH 2
 #define ENEMY_TILE_HEIGHT 2
@@ -45,7 +45,7 @@ void enemy_spawn(enemy_t *e, u8 num, u8 seed);
 void enemy_update(enemy_t *e);
 void enemy_draw(enemy_t *e);
 
-// void enemy_check_player(enemy_t *e, player *pl);
-// void enemy_hit_player(enemy_t *e, player *pl);
-// void enemy_get_hit(enemy_t *e, player *pl);
+void enemy_check_player(enemy_t *e, player *pl);
+void enemy_hit_player(enemy_t *e, player *pl);
+void enemy_get_hit(enemy_t *e, player *pl);
 #endif
