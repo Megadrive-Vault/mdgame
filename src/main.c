@@ -49,7 +49,6 @@ void gameloop(void)
 	player *player_b = &p2;
 	
 	bg_dma_tiles();
-	load_font(VDP_PLAN_B,0);
 	while (1)
 	{
 		i++;

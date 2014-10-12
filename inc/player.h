@@ -27,6 +27,7 @@
 
 // Physics "resolution"
 #define PLAYER_RESOLUTION 	1
+#define PLAYER_RESOLUTION 	1
 // Physics constants
 #define PLAYER_MAX_DX 		4
 #define PLAYER_MAX_DY 		15
