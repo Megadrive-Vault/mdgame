@@ -123,7 +123,7 @@ void enemy_spawn(enemy_t *e, u8 num, u8 seed)
 	e->anim_frame = 0;
 	e->anim_cnt = 0;
 	e->state = 1;
-	e->type = seed % 3;
+	e->type = seed % 2;
 	e->sprite_num = num;
 	e->enemy_num = 1;
 	e->curve = (seed >> 1 & 0x01) ? curve_a : curve_b;

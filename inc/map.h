@@ -17,6 +17,6 @@ game_map foreground_map;
 game_map background_map;
 
 // Function prototypes //
-void map_init(game_map_set*);
+void map_init(game_map_set*, u8 mapbg);
 
 #endif

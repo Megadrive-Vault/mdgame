@@ -200,7 +200,7 @@ void player_init(player *pl)
 	pl->flash = 0;
 	pl->hitfreeze = 0;
 	
-	pl->x = 96;
+	pl->x = 48;
 	pl->y = 32;
 	pl->dx = 0;
 	pl->dy = 0;
