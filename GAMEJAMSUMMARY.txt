@@ -1,3 +1,40 @@
+Game Title: Mega Squad Advantage
+by Michael Moffitt and Michael Swan
+for the Computer Science House 2014 fall Game Jam
+
+Summary:
+We set out to create a game that combined the elements we enjoy most from Joust, Towerfall, and Super Smash Bros - two players
+in a competetive "arena" setting, with only minimal means of hurting one another. In our game, the player has only one attack
+(a melee "slap" attack) with substantial delay, as well as a dash. With clever maneuvering and careful timing player skill can
+emerge from this simple system. The health is shown on the top for each player, and when it runs out a winner is declared.
+
+There are two maps, chosen at "random" (no such thing). 
+
+Challenges:
+The genesis is a slow machine by today's standards. - It runs on a less than 8MHz 16-bit CPU, the Motorola 68000. We had to be
+very careful of overhead, and realised that SGDK's functions were often slow and needed to be circumvented. However, our game
+runs at a solid 60fps always, so I think we did a good job here. The graphics were also very constrained in color depth and 
+amount of tiles, and editing levels meant opening a hex editor and manually typing in mappings while looking at VRAM in the 
+debugger for tile reference. We also had to think of a fun game idea and tweak it to be enjoyable and not broken. 
+
+Personal notes:
+
+Moffitt:
+ learned:
+  - How to organize a game program in C
+  - Basic Genesis VDP usage (from C).
+  - Manipulation of FM synthesis parameters (YM2612 registers)
+  - How to efficiently store and plot graphics in an actual tile plane / sprite system
+  - What DMA is 
+  - Balancing code speed and physics detail / "resolution"
+  - Memory management in an unmanaged environment
+ Review of Tools:
+  - We used SGDK though a bunch of things were done to bypass its built in structures since they are nasty
+  - Writing FM music is really hard
+  - The Genesis is awesome hardware, no screwing around
+  - The SGDK is a complete mess from a toolchain standpoint
+  - Rescomp is a godsend
+
 Swan:
  learned:
   - How to represent and generate a discrete bezier curve for use with programmed movement.
