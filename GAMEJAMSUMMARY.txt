@@ -1,0 +1,11 @@
+Swan:
+ learned:
+  - How to represent and generate a discrete bezier curve for use with programmed movement.
+  - How to write an LD script
+  - Basic Genesis VDP usage (from C).
+  - Basic FM synth tracker usage.
+ Review of tools:
+  - Genesis is predictable.
+  - The primary Genesis interface library used, SGDK, was at times hindering, especially in it's default build system.
+  - Using Unix utilities and programs on Windows is abysmal. (ie. gcc, ld, git, objcopy)
+  
