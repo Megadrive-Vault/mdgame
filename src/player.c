@@ -304,7 +304,6 @@ void player_take_inputs(player *pl, u8 pad_data)
 	{
 		if (pl->jump_key == 0)
 		{	
-			echo_play_sfx(sfx__jump);
 			pl->button_count++;
 			pl->jump_key = 1;
 		}
@@ -466,6 +465,7 @@ void player_move(player *pl)
 		}
 		else
 		{
+			echo_play_sfx(sfx__bounce);
 			pl->dx = pl->dx * -1;
 		}
 	}
@@ -483,6 +483,7 @@ void player_move(player *pl)
 		}
 		else
 		{
+			echo_play_sfx(sfx__bounce);
 			pl->dx = pl->dx * -1;
 		}
 	}
@@ -500,6 +501,7 @@ void player_move(player *pl)
 		}
 		else
 		{
+			echo_play_sfx(sfx__bounce);
 			pl->dy = pl->dy * -1;
 		}
 	}
@@ -513,6 +515,7 @@ void player_move(player *pl)
 		}
 		else
 		{
+			echo_play_sfx(sfx__bounce);
 			pl->dy = pl->dy * -1;
 		}
 	}
@@ -533,6 +536,7 @@ void player_move(player *pl)
 	{
 		if (pl->jump_key == 1)
 		{
+			echo_play_sfx(sfx__jump);
 			pl->dy = PLAYER_JUMPSTR * -1;
 		}
 	}
