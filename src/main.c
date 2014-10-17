@@ -54,10 +54,17 @@ static game_map_set menu_map_set =
 
 const u8 const *default_instrument_set[] =
 {
-	(u8*)instrument_chord,
-	(u8*)instrument_bass,
-	(u8*)instrument_lead,
-	(u8*)instrument_bell,
+	(u8*)echo_inst_00,
+	(u8*)echo_inst_01,
+	(u8*)echo_inst_02,
+	(u8*)echo_inst_03,
+	(u8*)echo_inst_04,
+	(u8*)echo_inst_05,
+	(u8*)echo_inst_06,
+	(u8*)echo_inst_07,
+	(u8*)echo_inst_08,
+	(u8*)echo_inst_09,
+	(u8*)echo_inst_10,
 	0
 };
 
@@ -216,7 +223,7 @@ static void game(void)
 	
 	// Initialize the sound engine
 	echo_init(default_instrument_set);
-	echo_play_bgm(&music__bgm); // TODO: Possibly adjust this convention just like instrument.
+	echo_play_bgm(&echo_music_bgm1); // TODO: Possibly adjust this convention just like instrument.
 	
 	while (p1.total_slaps < PLAYER_MAX_SLAPS && p2.total_slaps < PLAYER_MAX_SLAPS)
 	{

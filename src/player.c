@@ -51,7 +51,7 @@ void player_calc_animation(player *pl)
 	{	
 		if (pl->slapcnt == 1)
 		{
-			echo_play_sfx(sfx__slap);
+			////echo_play_sfx(sfx__slap);
 		}
 		pl->current_anim = PLAYER_ANIM_PRESLAP;
 	}
@@ -465,7 +465,7 @@ void player_move(player *pl)
 		}
 		else
 		{
-			echo_play_sfx(sfx__bounce);
+			//echo_play_sfx(sfx__bounce);
 			pl->dx = pl->dx * -1;
 		}
 	}
@@ -483,7 +483,7 @@ void player_move(player *pl)
 		}
 		else
 		{
-			echo_play_sfx(sfx__bounce);
+			//echo_play_sfx(sfx__bounce);
 			pl->dx = pl->dx * -1;
 		}
 	}
@@ -501,7 +501,7 @@ void player_move(player *pl)
 		}
 		else
 		{
-			echo_play_sfx(sfx__bounce);
+			//echo_play_sfx(sfx__bounce);
 			pl->dy = pl->dy * -1;
 		}
 	}
@@ -515,7 +515,7 @@ void player_move(player *pl)
 		}
 		else
 		{
-			echo_play_sfx(sfx__bounce);
+			//echo_play_sfx(sfx__bounce);
 			pl->dy = pl->dy * -1;
 		}
 	}
@@ -536,7 +536,7 @@ void player_move(player *pl)
 	{
 		if (pl->jump_key == 1)
 		{
-			echo_play_sfx(sfx__jump);
+			//echo_play_sfx(sfx__jump);
 			pl->dy = PLAYER_JUMPSTR * -1;
 		}
 	}
@@ -572,7 +572,7 @@ void player_draw(player *pl)
 
 void hit_other_player(player *pl)
 {
-	echo_play_sfx(sfx__hit);
+	//echo_play_sfx(sfx__hit);
 	pl->button_count++;
 	pl->total_slaps++;
 	pl->other->slapcooldown = 0;
@@ -754,7 +754,7 @@ void player_dash(player *pl)
 	{
 		if (pl->dashcooldown == 0 && pl->dashok && pl->hitstun == 0)
 		{
-			echo_play_sfx(sfx__dash);
+			//echo_play_sfx(sfx__dash);
 			pl->dashcooldown = PLAYER_DASHTIME;
 			player_dash_vectors(pl);
 		}

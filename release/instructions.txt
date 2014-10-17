@@ -1,0 +1,20 @@
+Run play.bat, which will open the emulator with the game.
+
+The default keys are:
+
+Player 1:
+Arrows: Move
+Enter: Start
+O: Jump
+P: Slap
+[: Dash
+
+Player 2:
+T, G, F, H: Move
+Rshift: Start
+A: Jump
+S: Slap
+D: Dash
+
+I recommend using a gamepad for at least one player. Recongfigure keys by 
+going to Options -> Set Config -> Controllers. 
